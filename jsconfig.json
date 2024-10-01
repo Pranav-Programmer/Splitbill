@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src", // or any other directory where your source code is located
+    "html2pdf.d.ts" // include your declaration file
+  ]
+}

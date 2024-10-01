@@ -1,0 +1,90 @@
+.main {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cards_item {
+  padding: 1rem;
+}
+
+.cards_item {
+  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.25));
+}
+
+.card {
+  background-color: var(--shade3);
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-left: 30px;
+  background: linear-gradient(red 0 0) 30px 0/2px 100% var(--shade3);
+  background-repeat: no-repeat;
+  line-height: 1.2rem;
+  -webkit-mask: radial-gradient(circle .8rem at 2px 50%, #0000 98%, #000) 0 0/100% 2.4rem;
+  mask: radial-gradient(circle .8rem at 2px 50%, #0000 98%, #000) 0 0/100% 2.4rem;
+}
+
+.card_content {
+  padding: 1.2rem;
+}
+
+.card_text{
+    font-family: 'Handwriting', cursive;
+    font-size: 1.2rem;
+    color: var(--fg);
+    font-weight: 400;
+    line-height: 1.5rem;
+}
+
+.card_title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background-color: rgba(255, 0, 0, 0.573);
+    padding: 5px 10px; /* Add some right padding to make room for the effect */
+    color: #fff;
+    font-family: 'Handwriting', cursive;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    position: relative; /* Required for the absolute positioning of ::before */
+    overflow: hidden; /* Ensures the clip-path is applied correctly */
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%);
+  }
+  
+  .card_title::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px; /* Adjust the width of the cut */
+    height: 100%;
+    background-color: rgba(189, 13, 13, 0.654); /* Match background color */
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
+
+  .hydrated{
+    height: 100vh;
+  }
+
+  .card_gap{
+    gap:20px;
+  }
+
+  @media (max-width: 559px) {
+    .card_gap{
+      gap: 1px;
+    }
+  }
+  
+  
+  

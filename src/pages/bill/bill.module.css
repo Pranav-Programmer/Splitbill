@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins');
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 73rem;
+    padding: 20px;
+  }
+  
+  .table {
+    background: var(--shade3);
+    width: 100%;
+    max-width: 73rem;
+    height: auto;
+    margin: 10px auto;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 8px 8px 8px 8px rgba(0,0,0,.2);
+    transform: translateY(0%);
+    transition: .3s;
+  }
+
+  .tableDown .table{
+    background: red;
+    width: 100%;
+    max-width: 73rem;
+    height: auto;
+    margin: 10px auto;
+    overflow: hidden;
+    transform: translateY(0%);
+    transition: .3s;
+  }
+  
+  .table:hover {
+    transform: translateY(-1%);
+    box-shadow: 1px 8px 5px rgba(0,0,0,.2);
+  }
+  
+  .headingContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--shade2);
+    padding: 20px;
+    /* text-transform: capitalize; */
+    border-top-left-radius: 50px;
+    border-top-right-radius: 50px;
+    margin-top: -1rem;
+  }
+  
+  .heading {
+    font-size: 15pt;
+    background: var(--shade2);
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    /* margin-bottom: -.7rem; */
+  }
+  
+  .date {
+    font-size: 15pt;
+    background: var(--shade2);
+  }
+  
+  .block {
+    display: block;
+    width: 89%;
+    max-width: 57rem;
+    margin: 27.3px 50%;
+    transform: translate(-50%);
+    border-bottom: 1px dashed var(--fg);
+  }
+
+  .blockVar .block {
+    border-bottom: 1px dashed var(--fg);
+  }
+  
+  .price {
+    float: right;
+    right: 30px;
+    font-size: 1.2rem;
+    color: var(--fg);
+  }
+
+  .priceVar .price{
+    float: right;
+    right: 30px;
+    font-size: 1.2rem;
+    color: var(--fg);
+  }
+
+  .metric{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: var(--fg);
+  }
+
+  .metricVar .metric{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: var(--fg);
+  }
+  
+  .btn {
+    display: block;
+    margin: 20px auto 30px;
+    width: 60%;
+    height: 50px;
+    background: #fb6a30;
+    border: none;
+    border-radius: 50px;
+    transition: .3s;
+    overflow: hidden;
+  }
+  
+  .btn:hover {
+    cursor: pointer;
+  } 
+
+  .hideButtons .buttonContainer,
+  .hideButtons .downloadButton {
+    display: none;
+  }
+
+  .logo {
+    display: none;
+    width: 120px;
+    height: auto;
+    margin-bottom: -1.4rem;
+  }
+
+  .showDiv .logo {
+    display: block;
+    width: 120px;
+    height: auto;
+    margin-bottom: -1.7rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: rgb(251, 28, 26);
+  }
+  
+  .billAmount{
+    color: var(--fg);
+  }
+  
+  .billAmountVar .billAmount{
+    color: var(--fg);
+  }
+
+  .bold_price {
+    float: right;
+    right: 30px;
+    font-size: 15pt;
+    color: var(--fg);
+  }
+
+  .priceVar .bold_price{
+    float: right;
+    right: 30px;
+    font-size: 15pt;
+    color: var(--fg);
+  }
+
+ .bold_billAmount{
+    color: var(--fg);
+  }
+  
+  .billAmountVar .bold_billAmount{
+    color: var(--fg);
+  }
+
+  .bold_innerBlock{
+    font-size: 15pt;
+  }
+
+  .valBtn{
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  
+
+  @media (min-width: 540px) {
+    .innerBlock {
+      width: 1rem;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .metric{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      color: var(--fg);
+      font-size: 12px;
+    }
+  
+    .metricVar .metric{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      color: var(--fg);
+      font-size: 12px;
+    }
+
+    .price {
+      float: right;
+      right: 30px;
+      font-size: 1rem;
+      color: var(--fg);
+    }
+  
+    .priceVar .price{
+      float: right;
+      right: 30px;
+      font-size: 1rem;
+      color: var(--fg);
+    }
+
+  }
+

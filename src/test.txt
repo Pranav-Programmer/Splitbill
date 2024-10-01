@@ -1,0 +1,2930 @@
+src
+|
+|----utils.js
+        import * as CryptoJS from 'crypto-js';
+
+        const secretKey = process.env.REACT_APP_SECRET_KEY || '12345';
+
+        export const encrypt = (plainText) => {
+            const cipherText = CryptoJS.AES.encrypt(plainText, secretKey).toString();
+            return cipherText;
+        }
+
+        export const decrypt = (cipherText) => {
+            const bytes = CryptoJS.AES.decrypt(cipherText, secretKey);
+            const plainText = bytes.toString(CryptoJS.enc.Utf8);
+            return plainText;
+        }
+│
+│
+├───components
+│   │   Layout.js
+        // components/Layout.js
+        import Link from 'next/link';
+        import '@/pages/app.css'
+        import MobileNavigationMenu from '@/components/MobileNavigationMenu/MobileNavigationMenu';
+
+        export default function Layout({ children }) {
+          return (
+            <>
+            <div className="min-h-screen flex flex-col">
+              <header className="bg-blue-500 text-white p-4">
+                <div className="container mx-auto">
+                </div>
+              </header>
+
+              <main className="flex-1 container mx-auto p-4">{children}</main>
+              <div> 
+                <div className='Mob_Nav' style={{marginTop:'19%'}}>
+                <MobileNavigationMenu />
+                </div>
+                </div>
+            </div>
+            </>
+          );
+        }
+│   │   Navbar.js
+            import Link from "next/link";
+            import React, { useEffect, useState } from "react";
+            import Image from "next/image";
+            import { useRouter } from 'next/router';
+            import IconButton from '@mui/material/IconButton';
+            import CloseIcon from '@mui/icons-material/Close';
+            import MenuIcon from '@mui/icons-material/Menu';
+            import styles from './Navbar.module.css';
+            import HouseSidingIcon from '@mui/icons-material/HouseSiding';
+            import HowToRegIcon from '@mui/icons-material/HowToReg';
+            import LoginIcon from '@mui/icons-material/Login';
+            import AccountBoxIcon from '@mui/icons-material/AccountBox';
+            import AddCircleIcon from '@mui/icons-material/AddCircle';
+            import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+            import EmailIcon from '@mui/icons-material/Email';
+            import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
+            import WbSunnyIcon from '@mui/icons-material/WbSunny';
+            import DarkModeIcon from '@mui/icons-material/DarkMode';
+            import '@/pages/app.css';
+
+
+            const Navbar = ({ isFormVisible, toggleFormVisibility, setShowSwitchModal }) => {
+              const router = useRouter();
+              const [scrolling, setScrolling] = useState(false);
+              const [scrollingTrp, setScrollingTrp] = useState(false);
+              const [anchorEl, setAnchorEl] = useState(null);
+              const [isMobile, setIsMobile] = useState(false);
+              const [isDarkMode, setIsDarkMode] = useState(false);
+              const isTransparentPage = router.pathname === '/bill/[id]';
+
+                useEffect(() => {
+                const savedMode = localStorage?.getItem('darkMode');
+                if (savedMode !== null) {
+                  setIsDarkMode(JSON.parse(savedMode));
+                }
+              }, []);
+
+              useEffect(() => {
+                const handleScroll2 = () => {
+                  if (window.scrollY < 85) {
+                    setScrollingTrp(true);
+                  } else {
+                    setScrollingTrp(false);
+                  }
+                };
+
+                window.addEventListener("scroll", handleScroll2);
+
+                return () => {
+                  window.removeEventListener("scroll", handleScroll2);
+                };
+              }, []);
+
+              useEffect(() => {
+            
+                const handleResize = () => {
+                  setIsMobile(window.innerWidth <= 1239);
+                };
+
+                handleResize();
+                window.addEventListener('resize', handleResize);
+
+                return () => {
+                  window.removeEventListener('resize', handleResize);
+                };
+              }, []);
+
+              const handleMenuToggle = (event) => {
+                setAnchorEl(anchorEl ? null : event.currentTarget);
+              };
+
+              const handleCloseMenu = () => {
+                setAnchorEl(null);
+              };
+
+              useEffect(() => {
+                const handleScroll = () => {
+                  if (window.scrollY > 0) {
+                    setScrolling(true);
+                  } else {
+                    setScrolling(false);
+                  }
+                };
+
+                window.addEventListener("scroll", handleScroll);
+
+                return () => {
+                  window.removeEventListener("scroll", handleScroll);
+                };
+              }, []);
+
+              const toggleDarkMode = () => {
+                setIsDarkMode(prevMode => {
+                  const newMode = !prevMode;
+                  localStorage.setItem('darkMode', JSON.stringify(newMode));
+                  return newMode;
+                });
+              };
+
+              useEffect(() => {
+                if (isDarkMode) {
+                  document.body.classList.add('dark-mode');
+                } else {
+                  document.body.classList.remove('dark-mode');
+                }
+              }, [isDarkMode]);
+
+              return (
+                <nav className={`${styles.navbar} ${isTransparentPage ? (scrollingTrp ? styles.transparent : styles.scrolling) : (scrolling ? styles.scrolling : '')}`}>
+                  <div className={styles.navbarContent}>
+                    <div className={styles.navbarLeft}>
+                      <Link href="/">
+                        <Image
+                          src="/logo.png"
+                          alt="dp"
+                          priority={true}
+                          width={150}
+                          height={150}
+                          style={{ cursor: 'pointer', borderRadius: '10px', width: '170px', height: 'auto' }}
+                        />
+                      </Link>
+                      <ul className={styles.navbarList}>
+                          <li className={styles.navbarItem} style={{marginTop:'.5rem'}}>
+                            <Link href="/" style={{textDecoration:'none'}}>
+                              <div className={router.pathname === '/' ? styles.activeLink : styles.inactiveLink}>Home</div>
+                            </Link>
+                          </li>
+                          <li className={styles.navbarItem} style={{marginTop:'.5rem'}}>
+                            <Link href="/register" style={{textDecoration:'none'}}>
+                              <div className={router.pathname === '/register' ? styles.activeLink : styles.inactiveLink}>Register</div>
+                            </Link>
+                          </li>
+                          <li className={styles.navbarItem} style={{marginTop:'.5rem'}}>
+                            <Link href="/login" style={{textDecoration:'none'}}>
+                              <div className={router.pathname === '/login' ? styles.activeLink : styles.inactiveLink}>Login</div>
+                            </Link>
+                          </li>
+                          <li className={styles.navbarItem} style={{marginTop:'.5rem'}}>
+                          <Link href="https://pranav-programmer.github.io/Contact-Form/" target="_blank" rel="noopener noreferrer" style={{textDecoration:'none'}}>
+                              <div className={router.pathname === '/login' ? styles.activeLink : styles.inactiveLink} style={{display: router.pathname === '/register' || router.pathname === '/login' ? 'none' : 'block'}}>Contact</div>
+                            </Link>
+                          </li>
+                      </ul>
+                    </div>
+                    <div className={styles.navbarRight}>
+                      {!isMobile && (
+                        <ul className={styles.navbarList}>
+                         <div style={{marginTop:'-.3rem', marginRight:'.5rem'}}>
+                            <input 
+                              type="checkbox" 
+                              className="checkbox" 
+                              id="checkbox" 
+                              checked={isDarkMode} 
+                              onChange={toggleDarkMode} 
+                            />
+                            <label htmlFor="checkbox" className="checkbox-label" style={{display: router.pathname === '/register' || router.pathname === '/login' || router.pathname === '/' || router.pathname === '/bill/[id]' ? 'none' : 'block'}}>
+                              <DarkModeIcon className="famoon"/>
+                              <WbSunnyIcon className="fasun"/>
+                              <span className="ball"></span>
+                            </label>
+                          </div>
+                          <Link href="/profile">
+                            <Image
+                              src="/dp.jpg"
+                              alt="profile"
+                              priority={false}
+                              width={34}
+                              height={34}
+                              style={{ cursor: 'pointer', borderRadius: '50%', marginTop:'-3px', display: router.pathname === '/register' || router.pathname === '/login' ? 'none' : 'block'}}
+                            />
+                          </Link>
+                           <button onClick={toggleFormVisibility} style={{ width:'2rem', height:'2rem', backgroundColor: '#1e40af', color: 'white', padding: '2px 1px 0 1px', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', marginLeft:'10px', marginTop:'-2px', display: router.pathname === '/register' || router.pathname === '/login' || router.pathname === '/profile' || router.pathname === '/bill/[id]' ? 'none' : 'block'}}>
+                                {isFormVisible ? <RemoveCircleIcon /> : <AddCircleIcon />}
+                            </button>
+                            <button style={{ backgroundColor: '#1e40af', color: 'white', padding: '2px 1px 0 1px', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', marginLeft:'10px', marginBottom:'10px', display: router.pathname === '/profile' ? 'block' : 'none', marginBottom:'.8rem'}}>
+                              <CameraswitchIcon onClick={() => setShowSwitchModal(true)}/>
+                            </button>
+                        </ul>
+                      )}
+                      {isMobile && (
+                        <div className={styles.mobileMenu} style={{ marginRight: '35px'}}>
+                          <div style={{marginTop:'-.7rem', marginRight:'-.3rem'}}>
+                            <input 
+                              type="checkbox" 
+                              className="checkbox" 
+                              id="checkbox" 
+                              checked={isDarkMode} 
+                              onChange={toggleDarkMode} 
+                            />
+                            <label htmlFor="checkbox" className="checkbox-labelmob" style={{display: router.pathname === '/register' || router.pathname === '/login' || router.pathname === '/bill/[id]' ? 'none' : 'block'}}>
+                              <DarkModeIcon className="famoonmob"/>
+                              <WbSunnyIcon className="fasunmob"/>
+                              <span className="ball"></span>
+                            </label>
+                          </div>
+                          <button onClick={toggleFormVisibility} style={{ width:'2rem', height:'2rem', backgroundColor: '#1e40af', color: 'white', padding: '1px 1px 0 1px', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', marginRight:'3px', marginLeft:'15px', display: router.pathname === '/register' || router.pathname === '/login' || router.pathname === '/profile' || router.pathname === '/bill/[id]' ? 'none' : 'block', marginBottom:'.8rem'}}>
+                                {isFormVisible ? <RemoveCircleIcon /> : <AddCircleIcon />}
+                            </button>
+                            <button style={{ backgroundColor: '#1e40af', color: 'white', padding: '1px 1px 0 1px', borderRadius: '0.5rem', border: 'none', cursor: 'pointer', marginRight:'10px', marginLeft:'15px', display: router.pathname === '/profile' ? 'block' : 'none', marginBottom:'.8rem'}}>
+                              {/* <Link href="/switchUserPage" style={{textDecoration:'none', color:'white'}}> */}
+                              <CameraswitchIcon onClick={() => setShowSwitchModal(true)}/>
+                              {/* </Link> */}
+                            </button>
+                          <IconButton className={styles.mobmenu} color="inherit" onClick={handleMenuToggle} style={{marginBottom:'.8rem'}}>
+                          {anchorEl ? <CloseIcon style={{ color: scrolling ? 'white' : 'black', fontSize:'2rem' }} /> : <MenuIcon style={{ color: scrolling ? 'white' : 'black', fontSize:'2rem' }} />}
+                          </IconButton>
+                          {anchorEl && (
+                            <div className={styles.mobileMenuContent}>
+                              <ul className={styles.mobileMenuList}>
+                                <li className={styles.mobileMenuItem}>
+                                  <Link href="/">
+                                    <div style={{display:'flex', flexDirection:'row', gap:'1rem'}}><HouseSidingIcon style={{color:'var(--shade7)', marginTop:'1rem'}}/><h4 className={styles.mobileMenuLink}>Home</h4></div>
+                                  </Link>
+                                </li>
+                                <li className={styles.mobileMenuItem}>
+                                  <Link href="/profile">
+                                  <div style={{display: router.pathname === '/register' || router.pathname === '/login' ? 'none' : 'flex', flexDirection:'row', gap:'1rem'}}><AccountBoxIcon style={{color:'var(--shade7)', marginTop:'1rem'}}/><h4 className={styles.mobileMenuLink}>Profile</h4></div>
+                                  </Link>
+                                </li>
+                                <li className={styles.mobileMenuItem}>
+                                  <Link href="/register">
+                                  <div style={{display:'flex', flexDirection:'row', gap:'1rem'}}><HowToRegIcon style={{color:'var(--shade7)', marginTop:'1rem'}}/><h4 className={styles.mobileMenuLink}>Register</h4></div>
+                                  </Link>
+                                </li>
+                                <li className={styles.mobileMenuItem}>
+                                  <Link href="/login">
+                                  <div style={{display:'flex', flexDirection:'row', gap:'1rem'}}><LoginIcon style={{color:'var(--shade7)', marginTop:'1rem'}}/><h4 className={styles.mobileMenuLink}>Login</h4></div>
+                                  </Link>
+                                </li>
+                                <li className={styles.mobileMenuItem}>
+                                  <Link href="https://pranav-programmer.github.io/Contact-Form/" target="_blank" rel="noopener noreferrer">
+                                  <div style={{display: router.pathname === '/register' || router.pathname === '/login' ? 'none' : 'flex', flexDirection:'row', gap:'1rem'}}><EmailIcon style={{color:'var(--shade7)', marginTop:'1rem'}}/><h4 className={styles.mobileMenuLink}>Contact</h4></div>
+                                  </Link>
+                                </li>
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </nav>
+              );
+            };
+
+            export default Navbar;
+│   │   SwitchUser.js
+            import { useState, useEffect } from 'react';
+            import { useRouter } from 'next/router';
+            import Layout from './Layout';
+            import Navbar from './Navbar';
+            import { encrypt, decrypt } from '@/utils';
+
+            const SwitchUser = ({setShowSwitchModal, currentLoggedUser}) => {
+              const router = useRouter();
+              const [username, setUsername] = useState('');
+              const [password, setPassword] = useState('');
+              const [rememberMe, setRememberMe] = useState(false);
+              const [passwordVisible, setPasswordVisible] = useState(false);
+              const [error, setError] = useState('');
+              const [storedUsers, setStoredUsers] = useState([]);
+              const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+              useEffect(() => {
+                const users = JSON.parse(localStorage.getItem('storedUsers')) || [];
+                const filteredUsers = users.filter(user => user.username !== currentLoggedUser);
+                setStoredUsers(filteredUsers);
+              }, [currentLoggedUser]);
+
+              const handleCheckboxChange = () => {
+                setRememberMe(!rememberMe);
+              };
+
+              const handleUserSwitch = (username) => {
+                setShowDeleteModal(true);
+                const selectedUser = storedUsers.find(user => user.username === username);
+                if (selectedUser) {
+                  const decryptedPassword = decrypt(selectedUser.password);
+                  setUsername(selectedUser.username);
+                  setPassword(decryptedPassword);
+                  setRememberMe(true);
+                }
+              };
+
+              const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                setError('');
+
+                handleUserSwitch(username);
+
+                const res = await fetch('/api/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ username, password }),
+                });
+
+                if (res.ok) {
+                  const data = await res.json();
+                  localStorage.setItem('token', data.token);
+
+                  router.push('/profile');
+                  window.location.reload();
+                } else {
+                  const data = await res.json();
+                  setError(data.message);
+                }
+              };
+
+              const handleRegisterClick = () => {
+                router.push('/register');
+              };
+
+              const togglePasswordVisibility = () => {
+                setPasswordVisible(!passwordVisible);
+              };
+
+              const handleModalConfirm = () => {
+                setShowDeleteModal(false)
+              };
+
+              return (
+                <Layout>
+                  <div style={{marginBottom:'18%'}}>
+                    <div>
+                      <div style={{ background: 'var(--shade2)', margin:'-15% -15% -35% -15%', padding: '50px', borderRadius: '20px' }}>
+                        {storedUsers.length > 0 ? (
+                          <div style={{ marginTop: '10px', marginBottom: '10px', width: '100%' }}>
+                            <div id="userSwitch" style={{ marginTop: '10px' }}>
+                              {storedUsers.map((user, index) => (
+                                <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                                  <span style={{ fontSize: '28px', color: 'var(--fg)' }}>{user.username}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUserSwitch(user.username)}
+                                    style={{ background: '#2b58ff', fontSize: '14px',color: 'var(--fg)', border: 'none', borderRadius: '5px', padding: '5px 10px', cursor: 'pointer', marginTop:'.3rem' }}
+                                  >
+                                    Switch
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (<h4 style={{textAlign:'justify'}}>You logged in with only one account, to switch account please logged in with more than one account and please check Remember me box to save user details for switch</h4>)}
+                        <button style={{
+                          display: 'block',
+                          width: '100%',
+                          padding: '0.75rem',
+                          fontSize: '1.125rem',
+                          fontWeight: '600',
+                          color: 'white',
+                          backgroundColor: 'gray',
+                          border: 'none',
+                          borderRadius: '0.5rem',
+                          cursor: 'pointer',
+                          textAlign: 'center',
+                          marginTop: '1.8rem',
+                        }} onClick={() => setShowSwitchModal(false)}>
+                          Cancel
+                        </button>
+                        {showDeleteModal && (
+                          <div style={{
+                            position: 'fixed',
+                            top: '0',
+                            left: '0',
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            zIndex: 1000,
+                          }}>
+                            <div style={{
+                              backgroundColor: 'var(--shade2)',
+                              padding: '2rem',
+                              borderRadius: '0.5rem',
+                              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                              width: '70%',
+                              maxWidth: '500px',
+                              textAlign: 'center'
+                            }}>
+                              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                <label htmlFor="login" style={{ fontSize: '22px', marginBottom: '10px', color: 'var(--fg)' }}>Do you want switch to <p style={{fontWeight:'bolder', display:'inline'}}>{username}</p> account?</label>
+                                <input
+                                  type="text"
+                                  id="login"
+                                  placeholder="Username"
+                                  value={username}
+                                  onChange={(e) => setUsername(e.target.value)}
+                                  style={{ display:'none', background: 'var(--shade2)', width: '100%', height: '50px', marginBottom: '20px', fontSize: '24px', border: 'none', borderBottom: '2px solid #83a4d4', color: 'var(--fg)', outline: 'none', paddingLeft: '20px', borderRadius: '10px' }}
+                                  required
+                                />
+                                <div style={{ display: 'none', alignItems: 'center', width: '102%', marginBottom: '20px' }}>
+                                  <input
+                                    type={passwordVisible ? 'text' : 'password'}
+                                    id="password"
+                                    placeholder="Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    style={{ background: 'var(--shade2)', width: '100%', height: '50px', fontSize: '24px', border: 'none', borderBottom: '2px solid #83a4d4', color: 'var(--fg)', outline: 'none', paddingLeft: '20px', borderRadius: '10px' }}
+                                    required
+                                  />
+                                </div>
+                                <div style={{display:'flex', flexDirection:'row', gap:'20px'}}>
+                                  <button type="submit" style={{ width: '8rem', height: '3rem', fontSize: '19px', border: 'none', borderRadius: '10px', background: '#2b58ff', color: 'var(--fg)', cursor: 'pointer' }}>
+                                    Switch
+                                  </button>
+                                  <button onClick={() => setShowDeleteModal(false)} style={{ width: '8rem', height: '3rem', fontSize: '19px', border: 'none', borderRadius: '10px', background: '#2b58ff', color: 'var(--fg)', cursor: 'pointer' }}>
+                                    Cancel
+                                  </button>
+                                </div>
+                                {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+                              </form>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </Layout>
+              );
+            }
+
+            export default SwitchUser;
+│   │
+│   └───MobileNavigationMenu
+│           MobileNavigationMenu.js
+                import React, { useState, useEffect } from 'react';
+                import { useRouter } from 'next/router';
+                import Link from 'next/link';
+                import styles from './MobileNavigationMenu.module.css';
+                import HouseOutlinedIcon from '@mui/icons-material/HouseOutlined';
+                import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+                import LoginOutlinedIcon from '@mui/icons-material/LoginOutlined';
+                import HowToRegOutlinedIcon from '@mui/icons-material/HowToRegOutlined';
+                import MarkEmailReadOutlinedIcon from '@mui/icons-material/MarkEmailReadOutlined';
+
+                const MobileNavigationMenu = () => {
+                  const router = useRouter();
+                  const [activeIndex, setActiveIndex] = useState(0);
+
+                  useEffect(() => {
+                    const pathToIndex = {
+                      'https://pranav-programmer.github.io/Contact-Form/': 5,
+                      '/profile': 2,
+                      '/login': 3,
+                      '/register': 4,
+                      '/' : 1,
+                    };
+
+                    const currentPath = router.asPath;
+
+                    if (pathToIndex[currentPath] !== undefined) {
+                      setActiveIndex(pathToIndex[currentPath]);
+                    }
+                    else {
+                        setActiveIndex(1);
+                      }
+                  }, [router.asPath]);
+
+                  return (
+                    <div className={styles.navigation}>
+                      <ul>
+                        <li className={`${styles.list} ${activeIndex === 1 ? styles.active : ''}`}>
+                          <Link href="/" style={{ textDecoration: 'none' }}>
+                            <span className={styles.icon}>
+                              <HouseOutlinedIcon />
+                            </span>
+                            <span className={styles.text}>Home</span>
+                            <span className={styles.circle}></span>
+                          </Link>
+                        </li>
+                        <li className={`${styles.list} ${activeIndex === 2 ? styles.active : ''}`}>
+                          <Link href="/profile" style={{ textDecoration: 'none' }}>
+                            <span className={styles.icon}>
+                              <AccountCircleOutlinedIcon />
+                            </span>
+                            <span className={styles.text}>Profile</span>
+                            <span className={styles.circle}></span>
+                          </Link>
+                        </li>
+                        <li className={`${styles.list} ${activeIndex === 3 ? styles.active : ''}`}>
+                          <Link href="/login" style={{ textDecoration: 'none' }}>
+                            <span className={styles.icon}>
+                              <LoginOutlinedIcon />
+                            </span>
+                            <span className={styles.text}>Login</span>
+                            <span className={styles.circle}></span>
+                          </Link>
+                        </li>
+                        <li className={`${styles.list} ${activeIndex === 4 ? styles.active : ''}`}>
+                          <Link href="/register" style={{ textDecoration: 'none' }}>
+                            <span className={styles.icon}>
+                              <HowToRegOutlinedIcon />
+                            </span>
+                            <span className={styles.text}>Register</span>
+                            <span className={styles.circle}></span>
+                          </Link>
+                        </li>
+                        <li className={`${styles.list} ${activeIndex === 5 ? styles.active : ''}`}>
+                          <Link href="https://pranav-programmer.github.io/Contact-Form/" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                            <span className={styles.icon}>
+                              <MarkEmailReadOutlinedIcon />
+                            </span>
+                            <span className={styles.text}>Contact</span>
+                            <span className={styles.circle}></span>
+                          </Link>
+                        </li>
+                        <div className={styles.indicator} style={{ transform: `translateX(calc(70px * ${(activeIndex - 1)}))` }}></div>
+                      </ul>
+                    </div>
+                  );
+                };
+
+                export default MobileNavigationMenu;
+│
+├───models
+│       Bill.js
+            import mongoose from 'mongoose';
+
+            const BillSchema = new mongoose.Schema({
+              userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+              date: { type: Date, required: true },
+              mainMeterReading: { type: Number, required: true },
+              splitWithMeterReading: { type: Number, required: true },
+              equalReading: { type: Number, required: true },
+              totalBillAmount: { type: Number, required: true },
+              splitWithUser1: { type: String, required: true },
+              splitWithUser2: { type: String, required: true },
+            });
+
+            export default mongoose.models.Bill || mongoose.model('Bill', BillSchema);
+│       User.js
+            // models/User.js
+            import mongoose from 'mongoose';
+
+            const UserSchema = new mongoose.Schema({
+              username: { type: String, required: true, unique: true },
+              password: { type: String, required: true },
+              splitWithUsername1: { type: String, required: true },
+              splitWithUsername2: { type: String, required: true },
+            });
+
+            export default mongoose.models.User || mongoose.model('User', UserSchema);
+│
+├───pages
+│   │   electricity-consumption.js
+            // pages/electricity-consumption.js
+            import { useEffect, useState } from 'react';
+            import styles from '@/components/electricity-consumption.module.css';
+            import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+
+            const ElectricityConsumption = ({updatedPrimaryUsername, updatedSecondaryUsername}) => {
+              const [data, setData] = useState([]);
+              const [error, setError] = useState(null);
+              const [selectedMonth, setSelectedMonth] = useState(null);
+
+              useEffect(() => {
+                const fetchData = async () => {
+                  const token = localStorage.getItem('token');
+                  try {
+                    const res = await fetch('/api/electricity-consumption', {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                    const result = await res.json();
+                    if (!res.ok) throw new Error(result.message);
+                    setData(result.data);
+                    setSelectedMonth(result.data.length - 1); 
+                  } catch (error) {
+                    setError(error.message);
+                  }
+                };
+
+                fetchData();
+              }, []);
+
+              if (error) {
+                return <p>Error: {error}</p>;
+              }
+
+              if (data.length === 0) {
+                return <p>No data available</p>;
+              }
+
+              const selectedData = data[selectedMonth];
+
+              return (
+                <div className={styles['main-container']}>
+                  <div className={styles['year-stats']}>
+                    {data.slice().reverse().map((item, index) => (
+                      <div
+                        className={styles['month-group']}
+                        key={index}
+                        onClick={() => setSelectedMonth(data.length - 1 - index)}
+                      >
+                        <div className={`${styles.bar} ${styles[`h-${(item.totalConsumptionThisMonthNor)}`]}`}></div>
+                        <p className={styles.month}>{new Date(item.month).toLocaleString('default', { month: 'long' }).slice(0, 3)}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {selectedMonth !== null && (
+                    <div className={styles['stats-info']}>
+                      <div className={styles['graph-container']}>
+                        <div style={{marginRight:'2rem'}} className={styles.percent}>
+                          <svg viewBox="0 0 36 36" style={{width:'125%'}} className={styles['circular-chart']}>
+                            <path 
+                              className={styles.circle} 
+                              strokeDasharray={`${((selectedData.primaryUserConsumption/selectedData.totalConsumptionThisMonth)*100)+(((selectedData.secondaryUserConsumption/selectedData.totalConsumptionThisMonth)*100)+((selectedData.sharedConsumption/selectedData.totalConsumptionThisMonth)*100))}, 100`} 
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                            />
+                            <path 
+                              className={styles.circle} 
+                              strokeDasharray={`${(((selectedData.secondaryUserConsumption/selectedData.totalConsumptionThisMonth)*100)+((selectedData.sharedConsumption/selectedData.totalConsumptionThisMonth)*100))}, 100`} 
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                            />
+                            <path 
+                              className={styles.circle} 
+                              strokeDasharray={`${((selectedData.sharedConsumption/selectedData.totalConsumptionThisMonth)*100)}, 100`} 
+                              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                        <p style={{display:'flex', flexDirection:'column', alignItems:'center', gap:'1rem'}}>
+                            <div>
+                            {selectedData.month}
+                            </div>
+                            <div>
+                            {selectedData.totalConsumptionThisMonth} units
+                            </div>
+                        </p>
+                        </div>
+                      </div>
+
+                      <div className={styles.info} >
+                        <div style={{display:'flex', flexDirection:'row', gap:'10px'}}><FiberManualRecordIcon style={{color:"#9a40d2"}}/><p style={{marginTop:'3px'}}>{selectedData.primaryUserName}<span> : {selectedData.primaryUserConsumption} units</span></p></div>
+                        <div style={{display:'flex', flexDirection:'row', gap:'10px'}}><FiberManualRecordIcon style={{color:"#e59f3c"}}/><p style={{marginTop:'3px'}}>{selectedData.secondaryUserName}<span> : {selectedData.secondaryUserConsumption} units</span></p></div>
+                        <div style={{display:'flex', flexDirection:'row', gap:'10px'}}><FiberManualRecordIcon style={{color:"#16f7a1"}}/><p style={{marginTop:'3px'}}>Shared<span> : {selectedData.sharedConsumption} units</span></p></div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            };
+
+            export default ElectricityConsumption;
+│   │   index.js
+            import { useState, useEffect } from 'react';
+            import Layout from '../components/Layout';
+            import { useRouter } from 'next/router';
+            import Link from 'next/link';
+            import Navbar from '../components/Navbar';
+            import styles from './index.module.css';
+            import "./app.css";
+            import LoadingSpinner from '../components/LoadingSpinner';
+            // import MobileNavigationMenu from '@/components/MobileNavigationMenu/MobileNavigationMenu'
+
+            export default function Home() {
+              const [mainMeterReading, setMainMeterReading] = useState('');
+              const [splitWithMeterReading, setSplitWithMeterReading] = useState('');
+              const [equalReading, setEqualReading] = useState('');
+              const [totalBillAmount, setTotalBillAmount] = useState('');
+              const [date, setDate] = useState('');
+              const [currentUser, setCurrentUser] = useState(null);
+              const [splitWithUser1, setSplitWithUser1] = useState(null);
+              const [splitWithUser2, setSplitWithUser2] = useState(null);
+              const [bills, setBills] = useState([]);
+              const [loading, setLoading] = useState(true);
+              const [error, setError] = useState(null);
+              const router = useRouter();
+              const [isFormVisible, setIsFormVisible] = useState(false);
+
+              const toggleFormVisibility = () => {
+                setIsFormVisible(!isFormVisible);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              };
+
+              useEffect(() => {
+                const fetchData = async () => {
+                  const token = localStorage.getItem('token');
+                  if (!token) {
+                    router.push('/login');
+                    return;
+                  }
+
+                  try {
+                    const userRes = await fetch('/api/get-current-user', {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+
+                    if (!userRes.ok) {
+                      router.push('/login');
+                      throw new Error('Failed to fetch user');
+                    }
+
+                    const userData = await userRes.json();
+                    setCurrentUser(userData.user);
+                    setSplitWithUser1(userData.user.splitWithUsername1 || '');
+                    setSplitWithUser2(userData.user.splitWithUsername2 || '');
+
+                    const billRes = await fetch('/api/get-bills', {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+
+                    if (!billRes.ok) {
+                      throw new Error('Failed to fetch bills');
+                    }
+
+                    const billData = await billRes.json();
+                    // Sort bills by date to ensure they are in the correct order
+                    billData.bills.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    setBills(billData.bills);
+                  } catch (error) {
+                    setError(error.message);
+                  } finally {
+                    setLoading(false);
+                  }
+                };
+
+                fetchData();
+              }, [router]);
+
+              const handleSubmit = async (e) => {
+                e.preventDefault();
+                const token = localStorage.getItem('token');
+                const res = await fetch('/api/add-bill', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    date,
+                    mainMeterReading,
+                    splitWithMeterReading,
+                    equalReading,
+                    totalBillAmount,
+                    splitWithUser1,
+                    splitWithUser2,
+                  }),
+                });
+
+                if (res.ok) {
+                  router.reload();
+                } else {
+                  const errorData = await res.json();
+                  alert(`Failed to add bill: ${errorData.message}`);
+                }
+              };
+
+              if (loading) {
+                return (
+                  <Layout>
+                            <div style={{display:'flex', height:'100%', alignItems:'center', justifyContent:'center', marginTop:'23%', flexDirection:'column'}}><LoadingSpinner/><p style={{marginLeft:'.8rem'}}>Loading the home page, just a moment...</p></div>
+                  </Layout>
+                );
+              }
+
+              if (error) {
+                return (
+                  <Layout>
+                    <p>Error: {error}</p>
+                  </Layout>
+                );
+              }
+
+              const calculateMonthlyReading = (current, previous) => current - (previous || 0);
+
+              return (
+                <Layout>
+                    <Navbar isFormVisible={isFormVisible} toggleFormVisibility={toggleFormVisibility} />
+                  {isFormVisible && (
+                    <form onSubmit={handleSubmit} style={{ maxWidth: '32rem', margin: '4.5rem auto 0 auto', backgroundColor: 'var(--shade1)', padding: '1.5rem', borderRadius: '0.5rem', boxShadow: '4px 4px 4px 6px rgba(0, 0, 0, 0.1)' }}>
+                      <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '1.5rem', textAlign: 'center', color: '#3b82f6' }}>Add Bill Details</h1>
+                      <div style={{ marginBottom: '1rem', paddingRight: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600', color: 'var(--shade10)' }}>Date</label>
+                        <input
+                          type="date"
+                          style={{ width: '100%', border: '2px solid #3b82f6', borderRadius: '0.5rem', padding: '0.5rem', backgroundColor:'var(--shade3)', color:'var(--fg)' }}
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div style={{ marginBottom: '1rem', paddingRight: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600', color: 'var(--shade10)' }}>Main Meter Reading</label>
+                        <input
+                          type="number"
+                          style={{ width: '100%', border: '2px solid #3b82f6', borderRadius: '0.5rem', padding: '0.5rem', backgroundColor:'var(--shade3)', color:'var(--fg)' }}
+                          value={mainMeterReading}
+                          onChange={(e) => setMainMeterReading(e.target.value)}
+                          required
+                        />
+                      </div>
+                      {currentUser && (
+                        <div style={{ marginBottom: '1rem', paddingRight: '1rem' }}>
+                          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600', color: 'var(--shade10)' }}>
+                            {splitWithUser2} Meter Reading
+                          </label>
+                          <input
+                            type="number"
+                            style={{ width: '100%', border: '2px solid #3b82f6', borderRadius: '0.5rem', padding: '0.5rem', backgroundColor:'var(--shade3)', color:'var(--fg)' }}
+                            value={splitWithMeterReading}
+                            onChange={(e) => setSplitWithMeterReading(e.target.value)}
+                            required
+                          />
+                        </div>
+                      )}
+                      <div style={{ marginBottom: '1rem', paddingRight: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600', color: 'var(--shade10)' }}>Shared Meter Reading</label>
+                        <input
+                          type="number"
+                          style={{ width: '100%', border: '2px solid #3b82f6', borderRadius: '0.5rem', padding: '0.5rem', backgroundColor:'var(--shade3)', color:'var(--fg)' }}
+                          value={equalReading}
+                          onChange={(e) => setEqualReading(e.target.value)}
+                          required
+                        />
+                      </div>
+                      <div style={{ marginBottom: '1rem', paddingRight: '1rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '1.125rem', fontWeight: '600', color: 'var(--shade10)' }}>Total Bill Amount</label>
+                        <input
+                          type="number"
+                          style={{ width: '100%', border: '2px solid #3b82f6', borderRadius: '0.5rem', padding: '0.5rem', backgroundColor:'var(--shade3)', color:'var(--fg)' }}
+                          value={totalBillAmount}
+                          onChange={(e) => setTotalBillAmount(e.target.value)}
+                          placeholder='Amount is editable in bill section'
+                          required
+                        />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <button type="submit" style={{ backgroundColor: '#3b82f6', color: 'var(--shade10)', padding: '0.5rem 1rem', borderRadius: '0.5rem', transition: 'background-color 0.3s' }} onMouseOver={e => e.currentTarget.style.backgroundColor = '#1e40af'} onMouseOut={e => e.currentTarget.style.backgroundColor = '#3b82f6'}>
+                        Add Bill
+                      </button>
+                      </div>
+                    </form>
+                  )}
+            <h2 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginTop: isFormVisible? '2rem' : '4.5rem', marginBottom: '-.5rem', textAlign: 'center', color: '#3b82f6' }}>{bills.length === 0 ? ("Add your first bill record"):("Previous Bills")}</h2>
+                  <div style={{ display: 'grid', placeItems: 'center' }}>
+                    <div className={styles.card_gap} style={{ display: 'grid', width: '95%', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+                      {bills.length > 0 && (
+                        bills.map((bill, index) => {
+                          const previousBill = index >= 0 ? bills[index + 1] : null;
+                          const previousMainMeterReading = previousBill ? previousBill.mainMeterReading : 0;
+                          const monthlyMainMeterReading = calculateMonthlyReading(bill.mainMeterReading, previousMainMeterReading);
+                          const ratePerUnit = (bill.totalBillAmount / monthlyMainMeterReading).toFixed(2);
+
+                          return (
+                            <Link key={bill._id} href={`/bill/${bill._id}`} style={{ textDecoration: 'none', color:'black' }}>
+                              <li className={styles.cards_item}>
+                                <div className={styles.card}>
+                                  <div className={styles.card_content}>
+                                    <h2 className={styles.card_title} style={{margin:' 1.2rem 0', fontSize:'1.3em'}}>Bill Details</h2>
+                                    <div className={styles.card_text}>
+                                      <p>Date: {new Date(bill.date).toLocaleDateString()}</p>
+                                      <p>Consumption: {monthlyMainMeterReading} units</p>
+                                      <p>Rate per Unit: {monthlyMainMeterReading === 0 ? ("N/A") : ("₹ " + ratePerUnit)}</p>
+                                      <p>Bill Amount: ₹ {bill.totalBillAmount}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                            </Link>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                  {/* <MobileNavigationMenu/> */}
+                </Layout>
+              );
+            }
+│   │   login.js
+            import { useState, useEffect } from 'react';
+            import { useRouter } from 'next/router';
+            import Layout from '../components/Layout';
+            import Navbar from '../components/Navbar';
+            import VisibilityIcon from '@mui/icons-material/Visibility';
+            import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+            import { encrypt, decrypt } from '../utils';
+
+            export default function Login() {
+              const router = useRouter();
+              const [username, setUsername] = useState('');
+              const [password, setPassword] = useState('');
+              const [rememberMe, setRememberMe] = useState(false);
+              const [passwordVisible, setPasswordVisible] = useState(false);
+              const [error, setError] = useState('');
+              const [storedUsers, setStoredUsers] = useState([]);
+
+              useEffect(() => {
+                const users = JSON.parse(localStorage.getItem('storedUsers')) || [];
+                setStoredUsers(users);
+              }, []);
+
+              const handleCheckboxChange = () => {
+                setRememberMe(!rememberMe);
+              };
+
+              const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                setError('');
+
+                const res = await fetch('/api/login', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ username, password }),
+                });
+
+                if (res.ok) {
+                  const data = await res.json();
+                  localStorage.setItem('token', data.token);
+
+                  if (rememberMe) {
+                    let users = JSON.parse(localStorage.getItem('storedUsers')) || [];
+                    const existingUserIndex = users.findIndex(user => user.username === username);
+
+                    const encryptedPassword = encrypt(password);
+
+                    if (existingUserIndex > -1) {
+                      users[existingUserIndex] = { username, password: encryptedPassword };
+                    } else {
+                      users.push({ username, password: encryptedPassword });
+                    }
+
+                    localStorage.setItem('storedUsers', JSON.stringify(users));
+                    setStoredUsers(users);
+                  }
+                  router.push('/');
+                } else {
+                  const data = await res.json();
+                  setError(data.message);
+                }
+              };
+
+              const handleRegisterClick = () => {
+                router.push('/register');
+              };
+
+              const togglePasswordVisibility = () => {
+                setPasswordVisible(!passwordVisible);
+              };
+
+              const handleUserSwitch = (e) => {
+                const selectedUser = storedUsers.find(user => user.username === e.target.value);
+                if (selectedUser) {
+                  const decryptedPassword = decrypt(selectedUser.password);
+                  setUsername(selectedUser.username);
+                  setPassword(decryptedPassword);
+                  setRememberMe(true);
+                }
+              };
+
+              return (
+                <Layout>
+                  <Navbar />
+                  <div style={{ fontFamily: 'Arial, sans-serif', margin: 0, padding: 0, height: '40vh', display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop:'15rem'}}>
+                    <div style={{ background: 'var(--shade2)', margin: '10px', padding: '50px', borderRadius: '20px', boxShadow: '8px 8px 8px 8px rgba(0,0,0,.2)',position:'absolute'}}>
+                      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', maxWidth:'40rem', margin: '.3rem auto 0 auto', padding:'.1rem'}}>
+                        <label htmlFor="login" style={{ fontSize: '24px', marginBottom: '10px', color: '#2b58ff' }}>SplitBill Login</label>
+                        {/* {storedUsers && (
+                          <div style={{ marginTop: '10px', marginBottom:'20px'}}>
+                            <label htmlFor="userSwitch" style={{ fontSize: '18px', color: '#888' }}>Select User:</label>
+                            <select id="userSwitch" onChange={handleUserSwitch} style={{ fontSize: '18px', marginLeft: '10px', cursor:'pointer', background:'var(--shade2)', color:'var(--fg)'}}>
+                              <option value="" style={{textAlign:'center',}}>- - - - - - - -</option>
+                              {storedUsers.map((user, index) => (
+                                <option key={index} value={user.username}>{user.username}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )} */}
+                        <input
+                          type="text"
+                          id="login"
+                          placeholder="Username"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          style={{ background:'var(--shade2)', width: '100%', height: '50px', marginBottom: '20px', fontSize: '24px', border: 'none', borderBottom: '2px solid #83a4d4', color: 'var(--fg)', outline: 'none', paddingLeft:'20px', borderRadius:'10px' }}
+                          required
+                        />
+                        <div style={{ display: 'flex', alignItems: 'center', width: '102%', marginBottom: '20px' }}>
+                          <input
+                            type={passwordVisible ? 'text' : 'password'}
+                            id="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            style={{ background:'var(--shade2)', width: '100%', height: '50px', fontSize: '24px', border: 'none', borderBottom: '2px solid #83a4d4', color: 'var(--fg)', outline: 'none', paddingLeft:'20px', borderRadius:'10px' }}
+                            required
+                          />
+                          {/* <button type="button" onClick={togglePasswordVisibility} style={{ background: 'none', border: 'none', cursor: 'pointer', marginLeft: '-40px' }}>
+                            {passwordVisible ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                          </button> */}
+                        </div>
+                        <label style={{ fontSize: '18px', marginBottom: '10px', color: '#888' }}>
+                          <input
+                            type="checkbox"
+                            checked={rememberMe}
+                            onChange={handleCheckboxChange}
+                            style={{ marginRight: '10px' }}
+                          />
+                          Remember me
+                        </label>
+                        <button type="submit" style={{ width: '100%', height: '50px', fontSize: '24px', border: 'none', borderRadius: '10px', background: '#2b58ff', color: 'var(--fg)', cursor: 'pointer' }}>
+                          Submit
+                        </button>
+                        <p style={{ fontSize: '14px', color: '#888', marginTop: '10px' }}>
+                          Please check Remember me box to save user details to switch user without re-entering credentials.
+                        </p>
+                        <p style={{ marginTop: '10px', fontSize: '14px', color: '#888', textAlign: 'center' }}>
+                          Don&apos;t have an account? <span style={{ cursor: 'pointer', color: '#2b58ff' }} onClick={handleRegisterClick}>Register here</span>
+                        </p>
+                        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+                      </form>
+                    </div>
+                  </div>
+                </Layout>
+              );
+            }
+│   │   profile.js
+            import { useState, useEffect } from 'react';
+            import Layout from '../components/Layout';
+            import { useRouter } from 'next/router';
+            import Navbar from '../components/Navbar';
+            import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+            import ElectricityConsumption from './electricity-consumption';
+            import SwitchUser from '@/components/SwitchUser';
+            import LoadingSpinner from '../components/LoadingSpinner';
+
+            export default function Profile() {
+              const router = useRouter();
+              const [user, setUser] = useState(null);
+              const [bills, setBills] = useState([]);
+              const [loading, setLoading] = useState(true);
+              const [error, setError] = useState(null);
+              const [isEditing, setIsEditing] = useState(false);
+              const [isEditing1, setIsEditing1] = useState(false);
+              const [isEditing2, setIsEditing2] = useState(false);
+              const [updatedUsername, setUpdatedUsername] = useState('');
+              const [updatedPrimaryUsername, setUpdatedPrimaryUsername] = useState('');
+              const [updatedSecondaryUsername, setUpdatedSecondaryUsername] = useState('');
+              const [showDeleteModal, setShowDeleteModal] = useState(false);
+              const [showSwitchModal, setShowSwitchModal] = useState(false);
+              const [storedUsers, setStoredUsers] = useState([]);
+
+              useEffect(() => {
+                const users = JSON.parse(localStorage.getItem('storedUsers')) || [];
+                setStoredUsers(users);
+              }, []);
+
+              useEffect(() => {
+                const fetchUserAndBills = async () => {
+                  const token = localStorage.getItem('token');
+                  if (!token) {
+                    router.push('/login');
+                    return;
+                  }
+
+                  try {
+                    const userRes = await fetch('/api/get-profile', {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+
+                    if (!userRes.ok) {
+                      router.push('/login');
+                      return;
+                    }
+
+                    const userData = await userRes.json();
+                    setUser(userData.user);
+
+                    const billsRes = await fetch('/api/get-bills', {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+
+                    if (!billsRes.ok) {
+                      const billData = await billsRes.json();
+                      throw new Error(billData.message);
+                    }
+
+                    const billsData = await billsRes.json();
+                    setBills(billsData.bills);
+                  } catch (error) {
+                    setError(error.message);
+                  } finally {
+                    setLoading(false);
+                  }
+                };
+
+                fetchUserAndBills();
+              }, [router]);
+
+              const handleLogout = async () => {
+                const res = await fetch('/api/logout', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (res.ok) {
+                  const updatedUsers = storedUsers.filter(storedUser => storedUser.username !== user.username);
+                  localStorage.setItem('storedUsers', JSON.stringify(updatedUsers));
+
+                  localStorage.removeItem('token');
+                  router.push('/login');
+                }  else {
+                  alert('Logout failed');
+                }
+              };
+
+              const handleDeleteAccount = async () => {
+                const token = localStorage.getItem('token');
+                try {
+                  const res = await fetch('/api/delete-account', {
+                    method: 'DELETE',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                    },
+                  });
+
+                  if (res.ok) {
+                  const updatedUsers = storedUsers.filter(storedUser => storedUser.username !== user.username);
+                  localStorage.setItem('storedUsers', JSON.stringify(updatedUsers));
+
+                    localStorage.removeItem('token');
+                    router.push('/login');
+                  } else {
+                    const errorData = await res.json();
+                    throw new Error(errorData.message);
+                  }
+                } catch (error) {
+                  setError(error.message);
+                }
+              };
+
+              const handleEditClick = () => {
+                setIsEditing(true);
+                setUpdatedUsername(user.username);
+              };
+
+              const handleEditClick1 = () => {
+                setIsEditing1(true);
+                setUpdatedPrimaryUsername(user.splitWithUsername1);
+              };
+
+              const handleEditClick2 = () => {
+                setIsEditing2(true);
+                setUpdatedSecondaryUsername(user.splitWithUsername2);
+              };
+
+              const handleSaveClick = async () => {
+                const token = localStorage.getItem('token');
+                const finalUpdatedUsername = updatedUsername || user.username;
+                const finalUpdatedPrimaryUsername = updatedPrimaryUsername || user.splitWithUsername1;
+                const finalUpdatedSecondaryUsername = updatedSecondaryUsername || user.splitWithUsername2;
+
+                try {
+                  const res = await fetch('/api/update-usernames', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      primaryUsername: finalUpdatedUsername,
+                      secondaryUsername1: finalUpdatedPrimaryUsername,
+                      secondaryUsername2: finalUpdatedSecondaryUsername,
+                    }),
+                  });
+
+                  if (res.ok) {
+                    const updatedUser = await res.json();
+                    setUser(updatedUser.user);
+                    setIsEditing(false);
+                    setIsEditing1(false);
+                    setIsEditing2(false);
+                  } else {
+                    const errorData = await res.json();
+                    throw new Error(errorData.message);
+                  }
+                } catch (error) {
+                  setError(error.message);
+                }
+              };
+
+              const handleModalConfirm = () => {
+                setShowDeleteModal(false);
+                handleDeleteAccount();
+              };
+
+              if (loading) {
+                return (
+                  <Layout>
+                    <div style={{display:'flex', height:'100%', alignItems:'center', justifyContent:'center', marginTop:'23%', flexDirection:'column'}}><LoadingSpinner/><p style={{marginLeft:'.8rem'}}>Loading your profile, please wait...</p></div>
+                  </Layout>
+                );
+              }
+
+              if (error) {
+                return (
+                  <Layout>
+                    <p>Error: {error}</p>
+                  </Layout>
+                );
+              }
+
+              const mround = (value, multiple) => {
+                return Math.round(value / multiple) * multiple;
+              };
+
+
+
+              bills.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+               // Calculating the required values
+               const oldestBillMainMeterReading = bills.length > 0 ? bills[0].mainMeterReading : 0;
+               const oldestBillAmount = bills.length > 0 ? bills[0].totalBillAmount : 0;
+
+               const totalUnits = bills.reduce((sum, bill) => bill.mainMeterReading, 0) - oldestBillMainMeterReading;
+               const totalSplitWithUnits = bills.reduce((sum, bill) => bill.splitWithMeterReading, 0);
+               const totalEqualUnits = bills.reduce((sum, bill) => bill.equalReading, 0);
+               const totalBillAmount = bills.reduce((sum, bill) => sum + bill.totalBillAmount, 0) - oldestBillAmount;
+               const averageRatePerUnit = totalBillAmount / totalUnits;
+
+               const totalPrimaryUserUnits = totalUnits - totalSplitWithUnits - totalEqualUnits;
+               const totalSecondaryUserUnits = totalSplitWithUnits;
+               const totalPrimaryUserBillAmount = totalBillAmount - (totalSecondaryUserUnits * averageRatePerUnit) - ((totalEqualUnits / 2) * averageRatePerUnit);
+               const roundedTotalPrimaryUserBillAmount = mround(totalPrimaryUserBillAmount, 10);
+               const totalSecondaryUserBillAmount = (totalSecondaryUserUnits * averageRatePerUnit) + ((totalEqualUnits / 2) * averageRatePerUnit);
+               const roundedTotalSecondaryUserBillAmount = mround(totalSecondaryUserBillAmount, 10);
+
+              return (
+                <Layout >
+                  <Navbar setShowSwitchModal={setShowSwitchModal} />
+                  <div style={{
+                    Width: '100%',
+                    maxWidth: '73rem',
+                    margin: '5rem auto 0 auto',
+                    backgroundColor: 'var(--shade3)',
+                    padding: '1.5rem 1.5rem 1.9rem 1.5rem',
+                    borderRadius: '0.5rem',
+                    boxShadow: '10px 10px 10px 15px rgba(0, 0, 0, 0.1)',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {(isEditing || isEditing1 || isEditing2) ? (
+                          <>
+                            {isEditing && (
+                              <input
+                                type="text"
+                                value={updatedUsername}
+                                onChange={(e) => setUpdatedUsername(e.target.value)}
+                                style={{ backgroundColor:'var(--shade2)', fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)', marginRight: '1rem' }}
+                              />
+                            )}
+                            {isEditing1 && (
+                              <input
+                                type="text"
+                                value={updatedPrimaryUsername}
+                                onChange={(e) => setUpdatedPrimaryUsername(e.target.value)}
+                                style={{ backgroundColor:'var(--shade2)', fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)', marginRight: '1rem' }}
+                              />
+                            )}
+                            {isEditing2 && (
+                              <input
+                                type="text"
+                                value={updatedSecondaryUsername}
+                                onChange={(e) => setUpdatedSecondaryUsername(e.target.value)}
+                                style={{ backgroundColor:'var(--shade2)', fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)' }}
+                              />
+                            )}
+                            <button onClick={handleSaveClick} style={{ color: 'var(--fg)', backgroundColor:'var(--shade2)', marginLeft: '1rem',  padding:'.2rem', fontSize:'1rem', marginBottom:'.2rem'}}>Save</button>
+                          </>
+                        ) : (
+                          <>
+                            <div>
+                              <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+                                <p style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)' }}>Owner: {user.username}</p>
+                                <BorderColorOutlinedIcon onClick={handleEditClick} style={{ fontSize: '1.3rem', cursor: 'pointer', marginTop: '1rem' }} />
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+                                <p style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)' }}>Primary User: {user.splitWithUsername1}</p>
+                                <BorderColorOutlinedIcon onClick={handleEditClick1} style={{ fontSize: '1.3rem', cursor: 'pointer', marginTop: '1rem' }} />
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+                                <p style={{ fontSize: '1.125rem', fontWeight: '600', color: 'var(--fg)' }}>Secondary User: {user.splitWithUsername2}</p>
+                                <BorderColorOutlinedIcon onClick={handleEditClick2} style={{ fontSize: '1.3rem', cursor: 'pointer', marginTop: '1rem' }} />
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <h2 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 'bold',
+                        color: '#3b82f6',
+                        marginBottom: '1rem'
+                      }}>Electricity Usage Summary</h2>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Metric</th>
+                            <th style={{ border: '1px solid #ddd', padding: '8px' }}>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total electricity unit consumption</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{totalUnits}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center'}}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total electricity unit consumption by {user.splitWithUsername1}</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{totalPrimaryUserUnits}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total electricity unit consumption by {user.splitWithUsername2}</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{totalSecondaryUserUnits}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total shared electricity unit consumption</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{totalEqualUnits}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total bill amount</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{totalBillAmount}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total bill amount for {user.splitWithUsername1}</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{roundedTotalPrimaryUserBillAmount}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Total bill amount for {user.splitWithUsername2}</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{roundedTotalSecondaryUserBillAmount}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                          <tr>
+                            <td style={{ border: '1px solid #ddd', padding: '8px' }}>Average rate per unit</td>
+                            {bills.length>0 ? (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>{averageRatePerUnit.toFixed(2)}</td>) : 
+                            (<td style={{ border: '1px solid #ddd', padding: '8px', textAlign:'center' }}>N/A</td>)}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center' }}>
+                      {totalUnits>0 ? (<ElectricityConsumption updatedPrimaryUsername={user.splitWithUsername1} updatedSecondaryUsername={user.splitWithUsername2} />) : 
+                      (<h3>Add your first bill record</h3>)}
+                    </div>
+                    <div style={{display:'flex', flexDirection:'row', justifyContent:'center', gap:'1rem', margig:'1rem'}}>
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '0.75rem',
+                        fontSize: '1.125rem',
+                        fontWeight: '600',
+                        color: 'white',
+                        backgroundColor: 'gray',
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        marginTop: '1rem',
+                      }}
+                    >
+                      Logout
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteModal(true)}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        padding: '0.75rem',
+                        fontSize: '1.125rem',
+                        fontWeight: '600',
+                        color: 'white',
+                        backgroundColor: '#EF4444',
+                        border: 'none',
+                        borderRadius: '0.5rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        marginTop: '1rem',
+                      }}
+                    >
+                      Delete Account
+                    </button>
+                    </div>
+                    {showDeleteModal && (
+                      <div style={{
+                        position: 'fixed',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: 1000,
+                      }}>
+                        <div style={{
+                          backgroundColor: 'var(--shade2)',
+                          padding: '2rem',
+                          borderRadius: '0.5rem',
+                          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                          width: '70%',
+                          maxWidth: '500px',
+                          textAlign: 'center'
+                        }}>
+                         <span style={{
+                          backgroundColor: '#dc2626',
+                          color: 'white',
+                          padding: '1rem',
+                          borderRadius: '9999px',
+                          display: 'inline-flex',
+                          marginTop: '-1.7rem',
+                          marginBottom: '-1rem',
+                        }}>
+                    <svg style={{ fill: 'currentColor', width: '2rem', height: '2rem' }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z"/>
+                    </svg>
+                  </span>
+                          <h2>Confirm Account Deletion</h2>
+                          <p>Are you sure you want to delete your account? You won&apos;t be able to retrieve any data once deleted.</p>
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-around',
+                            marginTop: '1rem'
+                          }}>
+                            <button onClick={() => setShowDeleteModal(false)} style={{
+                              backgroundColor: 'gray',
+                              color: 'white',
+                              padding: '0.5rem 1rem',
+                              border: 'none',
+                              borderRadius: '0.25rem',
+                              cursor: 'pointer'
+                            }}>Cancel</button>
+                            <button onClick={handleModalConfirm} style={{
+                              backgroundColor: '#EF4444',
+                              color: 'white',
+                              padding: '0.5rem 1rem',
+                              border: 'none',
+                              borderRadius: '0.25rem',
+                              cursor: 'pointer'
+                            }}>Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {showSwitchModal && (
+                      <div style={{
+                        position: 'fixed',
+                        top: '0',
+                        left: '0',
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        zIndex: 1000,
+                      }}>
+                        <div style={{
+                          backgroundColor: 'var(--shade2)',
+                          padding: '2rem',
+                          borderRadius: '0.5rem',
+                          boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                          width: '70%',
+                          maxWidth: '500px',
+                          textAlign: 'center'
+                        }}>             
+                          <SwitchUser setShowSwitchModal={setShowSwitchModal} currentLoggedUser = {user.username}/>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Layout>
+              );
+            }
+│   │   register.js
+            import { useState } from 'react';
+            import { useRouter } from 'next/router';
+            import Layout from '../components/Layout';
+            import Navbar from '../components/Navbar';
+            import Link from 'next/link';
+
+            export default function Register() {
+              const [username, setUsername] = useState('');
+              const [password, setPassword] = useState('');
+              const [splitWithUsername1, setSplitWithUsername1] = useState('');
+              const [splitWithUsername2, setSplitWithUsername2] = useState('');
+              const [error, setError] = useState('');
+              const router = useRouter();
+
+              const handleSubmit = async (e) => {
+                e.preventDefault();
+
+                setError('');
+
+                const res = await fetch('/api/register', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ username, password, splitWithUsername1, splitWithUsername2 }),
+                });
+
+                if (res.ok) {
+                  router.push('/login');
+                } else {
+                  const data = await res.json();
+                  setError(data.message);
+                }
+              };
+
+              return (
+                <Layout>
+                  <Navbar />
+                  <div style={{
+                    fontFamily: 'Arial, sans-serif',
+                    margin: 0,
+                    padding: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '40vh',
+                    marginTop:'17rem',
+                    // background: 'linear-gradient(to right, #83a4d4, #2b59ee)',
+                  }}>
+                    <div style={{
+                      background: 'var(--shade2)',
+                      margin: '10px',
+                      padding: '50px',
+                      borderRadius: '20px',
+                      boxShadow: '8px 8px 8px 8px rgba(0,0,0,.2)',
+                      position:'absolute'
+                    }}>
+                      <form onSubmit={handleSubmit} style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                      }}>
+                        <label htmlFor="username" style={{
+                          fontSize: '24px',
+                          marginBottom: '10px',
+                          color: '#2b58ff',
+                        }}>SplitBill Register</label>
+                        <input
+                          type="text"
+                          id="username"
+                          placeholder="Username"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            marginBottom: '20px',
+                            fontSize: '24px',
+                            border: 'none',
+                            borderBottom: '2px solid #83a4d4',
+                            color: 'var(--fg)',
+                            borderRadius:'10px',
+                            paddingLeft:'20px',
+                            backgroundColor: 'var(--shade2)',
+                            outline: 'none',
+                          }}
+                          required
+                        />
+                        <input
+                          type="password"
+                          id="password"
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            marginBottom: '20px',
+                            fontSize: '24px',
+                            border: 'none',
+                            borderBottom: '2px solid #83a4d4',
+                            color: 'var(--fg)',
+                            borderRadius:'10px',
+                            paddingLeft:'20px',
+                            backgroundColor: 'var(--shade2)',
+                            outline: 'none',
+                          }}
+                          required
+                        />
+                        <input
+                          type="text"
+                          id="splitWithUsername1"
+                          placeholder="Split Bill With (User1)"
+                          value={splitWithUsername1}
+                          onChange={(e) => setSplitWithUsername1(e.target.value)}
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            marginBottom: '20px',
+                            fontSize: '24px',
+                            border: 'none',
+                            borderBottom: '2px solid #83a4d4',
+                            color: 'var(--fg)',
+                            borderRadius:'10px',
+                            paddingLeft:'20px',
+                            backgroundColor: 'var(--shade2)',
+                            outline: 'none',
+                          }}
+                          required
+                        />
+                        <input
+                          type="text"
+                          id="splitWithUsername2"
+                          placeholder="Split Bill With (User2)"
+                          value={splitWithUsername2}
+                          onChange={(e) => setSplitWithUsername2(e.target.value)}
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            marginBottom: '20px',
+                            fontSize: '24px',
+                            border: 'none',
+                            borderBottom: '2px solid #83a4d4',
+                            color: 'var(--fg)',
+                            borderRadius:'10px',
+                            paddingLeft:'20px',
+                            backgroundColor: 'var(--shade2)',
+                            outline: 'none',
+                          }}
+                          required
+                        />
+                        <button
+                          type="submit"
+                          style={{
+                            width: '100%',
+                            height: '50px',
+                            fontSize: '24px',
+                            border: 'none',
+                            borderRadius: '10px',
+                            background: '#2b58ff',
+                            color: 'white',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Register
+                        </button>
+                        <p style={{ fontSize: '14px', color: '#888', marginTop: '10px' }}>
+                          Please store your username and password securely, as you won&apos;t be able to recover them in the future.
+                        </p>
+                        <p style={{ fontSize: '14px', color: '#888', marginTop: '10px' }}>
+                          Already have an account? <Link href="/login" style={{ color: '#2b58ff', textDecoration: 'none' }}>Login here</Link>
+                        </p>
+                        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+                      </form>
+                    </div>
+                  </div>
+                </Layout>
+              );
+            }
+│   │
+│   ├───api
+│   │   │   add-bill.js
+                import dbConnect from '../../utils/db';
+                import Bill from '../../models/Bill';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'POST') {
+                    const { date, mainMeterReading, splitWithMeterReading, equalReading, totalBillAmount, splitWithUser1, splitWithUser2 } = req.body;
+
+                    try {
+                      const token = req.headers.authorization.split(' ')[1];
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+
+                      const newBill = new Bill({
+                        userId,
+                        date,
+                        mainMeterReading,
+                        splitWithMeterReading,
+                        equalReading,
+                        totalBillAmount,
+                        splitWithUser1,
+                        splitWithUser2,
+                      });
+
+                      await newBill.save();
+
+                      res.status(201).json({ message: 'Bill added' });
+                    } catch (error) {
+                      console.error('Error adding bill:', error);
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   add-user.js
+                // pages/api/add-user.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'POST') {
+                    const { token, name, meterReading } = req.body;
+
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+                      const user = await User.findById(userId);
+
+                      if (!user) {
+                        return res.status(404).json({ message: 'User not found' });
+                      }
+
+                      user.users.push({ name, meterReading });
+
+                      await user.save();
+
+                      res.status(200).json({ message: 'User added' });
+                    } catch (error) {
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   delete-account.js
+                // pages/api/delete-account.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import Bill from '../../models/Bill';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  const token = req.headers.authorization?.split(' ')[1];
+                  if (!token) {
+                    return res.status(401).json({ message: 'Authorization token missing' });
+                  }
+
+                  if (req.method === 'DELETE') {
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+
+                      // Delete the user's bills
+                      await Bill.deleteMany({ userId });
+
+                      // Delete the user
+                      await User.findByIdAndDelete(userId);
+
+                      res.status(200).json({ message: 'Account and associated bills deleted successfully' });
+                    } catch (error) {
+                      console.error(error);
+                      res.status(500).json({ message: 'Failed to delete account' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   electricity-consumption.js
+                import dbConnect from '../../utils/db';
+                import Bill from '../../models/Bill';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                async function fetchBills(userId) {
+                  await dbConnect();
+                  const bills = await Bill.find({ userId }).sort({ date: 1 });
+                  return bills;
+                }
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  const token = req.headers.authorization?.split(' ')[1];
+                  if (!token) {
+                    return res.status(401).json({ message: 'Authorization token missing' });
+                  }
+
+                  if (req.method === 'GET') {
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+
+                      const bills = await fetchBills(userId);
+                      if (!bills || bills.length === 0) {
+                        return res.status(404).json({ message: 'No bills found' });
+                      }
+
+                      let totalConsumptionArray = [];
+                      let secondaryConsumptionArray = [];
+                      let sharedConsumptionArray = [];
+                      let primaryConsumptionArray = [];
+
+                      for (let i = 1; i < bills.length; i++) {
+                        const currentBill = bills[i];
+                        const previousBill = bills[i - 1];
+
+                        const totalConsumptionThisMonth = currentBill.mainMeterReading - previousBill.mainMeterReading;
+                        const secondaryUserConsumption = currentBill.splitWithMeterReading - previousBill.splitWithMeterReading;
+                        const sharedConsumption = currentBill.equalReading - previousBill.equalReading;
+                        const primaryUserConsumption = totalConsumptionThisMonth - secondaryUserConsumption - sharedConsumption;
+
+                        totalConsumptionArray.push(totalConsumptionThisMonth);
+                        secondaryConsumptionArray.push(secondaryUserConsumption);
+                        sharedConsumptionArray.push(sharedConsumption);
+                        primaryConsumptionArray.push(primaryUserConsumption);
+                      }
+
+                      // Function to normalize a value to range 1-100
+                      const normalize = (value, min, max) => {
+                        return ((value - min) / (max - min)) * 99 + 1;
+                      };
+
+                      // Get min and max for each metric
+
+                      const totalConsumptionMax = Math.max(...totalConsumptionArray);
+                      const secondaryConsumptionMax = Math.max(...secondaryConsumptionArray);
+                      const sharedConsumptionMax = Math.max(...sharedConsumptionArray)
+                      const primaryConsumptionMax = Math.max(...primaryConsumptionArray);
+
+                      // Array to hold normalized consumption data for each bill
+                      const consumptionData = [];
+
+                      // Normalize each value, round to nearest integer, and prepare the response object
+                      for (let i = 1; i < bills.length; i++) {
+                        const currentBill = bills[i];
+                        const previousBill = bills[i - 1];
+
+                        const totalConsumptionThisMonth = currentBill.mainMeterReading - previousBill.mainMeterReading;
+                        const secondaryUserConsumption = currentBill.splitWithMeterReading - previousBill.splitWithMeterReading;
+                        const sharedConsumption = currentBill.equalReading - previousBill.equalReading;
+                        const primaryUserConsumption = totalConsumptionThisMonth - secondaryUserConsumption - sharedConsumption;
+
+                        consumptionData.push({
+                          month: new Date(currentBill.date).toLocaleString('default', { month: 'short', year: 'numeric' }),
+                          totalConsumptionThisMonthNor: Math.round(normalize(totalConsumptionThisMonth, 0, totalConsumptionMax)),
+                          primaryUserConsumptionNor: Math.round(normalize(primaryUserConsumption, 0, primaryConsumptionMax)),
+                          secondaryUserConsumptionNor: Math.round(normalize(secondaryUserConsumption, 0, secondaryConsumptionMax)),
+                          sharedConsumptionNor: Math.round(normalize(sharedConsumption, 0, sharedConsumptionMax)),
+
+                          totalConsumptionThisMonth: currentBill.mainMeterReading - previousBill.mainMeterReading,
+                          secondaryUserConsumption: currentBill.splitWithMeterReading - previousBill.splitWithMeterReading,
+                          sharedConsumption: currentBill.equalReading - previousBill.equalReading,
+                          primaryUserConsumption: totalConsumptionThisMonth - secondaryUserConsumption - sharedConsumption,
+                          primaryUserName: currentBill.splitWithUser1,
+                          secondaryUserName: currentBill.splitWithUser2,
+                        });
+                      }
+
+                      res.status(200).json({ data: consumptionData });
+                    } catch (error) {
+                      console.error(error);
+                      res.status(500).json({ message: 'Failed to fetch electricity consumption data' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   get-bills.js
+                // pages/api/get-bills.js
+                import dbConnect from '../../utils/db';
+                import Bill from '../../models/Bill';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'GET') {
+                    const { authorization } = req.headers;
+                    if (!authorization) {
+                      return res.status(401).json({ message: 'No token provided' });
+                    }
+
+                    const token = authorization.split(' ')[1];
+
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+                      const bills = await Bill.find({ userId });
+
+                      res.status(200).json({ bills });
+                    } catch (error) {
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   get-current-user.js
+                // pages/api/get-current-user.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  const token = req.headers.authorization.split(' ')[1];
+                  if (!token) {
+                    return res.status(401).json({ message: 'Authorization token missing' });
+                  }
+
+                  try {
+                    const { userId } = jwt.verify(token, JWT_SECRET);
+                    const user = await User.findById(userId).select('username splitWithUsername1 splitWithUsername2');
+                    if (!user) {
+                      return res.status(404).json({ message: 'User not found' });
+                    }
+
+                    res.status(200).json({ user });
+                  } catch (error) {
+                    res.status(401).json({ message: 'Invalid token' });
+                  }
+                }
+│   │   │   get-previous-bill.js
+                // pages/api/get-previous-bill.js
+                import dbConnect from '../../utils/db';
+                import Bill from '../../models/Bill';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'GET') {
+                    const { authorization } = req.headers;
+                    const { billDate } = req.query;
+
+                    if (!authorization) {
+                      return res.status(401).json({ message: 'No token provided' });
+                    }
+
+                    const token = authorization.split(' ')[1];
+
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+
+                      if (!billDate) {
+                        return res.status(400).json({ message: 'Bill date is required' });
+                      }
+
+                      // Parse the billDate to a Date object
+                      const billDateObj = new Date(billDate);
+                      // Get the first day of the current month based on the bill date
+                      const firstDayCurrentMonth = new Date(billDateObj.getFullYear(), billDateObj.getMonth(), 1);
+                      // Get the first day of the previous month based on the bill date
+                      const firstDayPreviousMonth = new Date(billDateObj.getFullYear(), billDateObj.getMonth() - 1, 1);
+                      // Get the last day of the previous month based on the bill date
+                      const lastDayPreviousMonth = new Date(billDateObj.getFullYear(), billDateObj.getMonth(), 0);
+
+                      const previousBill = await Bill.findOne({
+                        userId,
+                        date: {
+                          $gte: firstDayPreviousMonth,
+                          $lt: firstDayCurrentMonth
+                        }
+                      }).sort({ date: -1 });
+
+                      if (!previousBill) {
+                        return res.status(200).json({ bill: {} });
+                      }
+
+                      // Format date to yyyy-mm-dd
+                      previousBill.date = new Date(previousBill.date).toISOString().split('T')[0];
+
+                      res.status(200).json({ bill: previousBill });
+                    } catch (error) {
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   get-profile.js
+                // pages/api/get-profile.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'GET') {
+                    const { authorization } = req.headers;
+                    if (!authorization) {
+                      return res.status(401).json({ message: 'No token provided' });
+                    }
+
+                    const token = authorization.split(' ')[1];
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+
+                      const user = await User.findById(userId).select('username splitWithUsername1 splitWithUsername2');
+                      if (!user) {
+                        return res.status(404).json({ message: 'User not found' });
+                      }
+
+                      res.status(200).json({ user });
+                    } catch (error) {
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   get-users.js
+                // pages/api/get-users.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'GET') {
+                    const { authorization } = req.headers;
+                    if (!authorization) {
+                      return res.status(401).json({ message: 'No token provided' });
+                    }
+
+                    const token = authorization.split(' ')[1];
+
+                    try {
+                      const { userId } = jwt.verify(token, JWT_SECRET);
+                      const user = await User.findById(userId);
+
+                      if (!user) {
+                        return res.status(404).json({ message: 'User not found' });
+                      }
+
+                      res.status(200).json({ users: user.users });
+                    } catch (error) {
+                      res.status(401).json({ message: 'Invalid token' });
+                    }
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   login.js
+                // pages/api/login.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import bcrypt from 'bcryptjs';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  if (req.method === 'POST') {
+                    const { username, password } = req.body;
+
+                    const user = await User.findOne({ username });
+
+                    if (!user) {
+                      return res.status(401).json({ message: 'Invalid credentials' });
+                    }
+
+                    const isValid = await bcrypt.compare(password, user.password);
+
+                    if (!isValid) {
+                      return res.status(401).json({ message: 'Invalid credentials' });
+                    }
+
+                    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+
+                    res.status(200).json({ token });
+                  } else {
+                    res.status(405).json({ message: 'Method not allowed' });
+                  }
+                }
+│   │   │   logout.js
+                // pages/api/logout.js
+                export default function handler(req, res) {
+                    if (req.method === 'POST') {
+                      // Assuming we are using token-based authentication, there's no need to handle server-side session
+                      // Simply respond with a success message
+                      res.status(200).json({ message: 'Logout successful' });
+                    } else {
+                      res.setHeader('Allow', ['POST']);
+                      res.status(405).end(`Method ${req.method} Not Allowed`);
+                    }
+                  }
+│   │   │   register.js
+                import { useState } from 'react';
+                import { useRouter } from 'next/router';
+                import Layout from '../components/Layout';
+                import Navbar from '../components/Navbar';
+                import Link from 'next/link';
+
+                export default function Register() {
+                  const [username, setUsername] = useState('');
+                  const [password, setPassword] = useState('');
+                  const [splitWithUsername1, setSplitWithUsername1] = useState('');
+                  const [splitWithUsername2, setSplitWithUsername2] = useState('');
+                  const [error, setError] = useState('');
+                  const router = useRouter();
+
+                  const handleSubmit = async (e) => {
+                    e.preventDefault();
+
+                    setError('');
+
+                    const res = await fetch('/api/register', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ username, password, splitWithUsername1, splitWithUsername2 }),
+                    });
+
+                    if (res.ok) {
+                      router.push('/login');
+                    } else {
+                      const data = await res.json();
+                      setError(data.message);
+                    }
+                  };
+
+                  return (
+                    <Layout>
+                      <Navbar />
+                      <div style={{
+                        fontFamily: 'Arial, sans-serif',
+                        margin: 0,
+                        padding: 0,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '40vh',
+                        marginTop:'17rem',
+                        // background: 'linear-gradient(to right, #83a4d4, #2b59ee)',
+                      }}>
+                        <div style={{
+                          background: 'var(--shade2)',
+                          margin: '10px',
+                          padding: '50px',
+                          borderRadius: '20px',
+                          boxShadow: '8px 8px 8px 8px rgba(0,0,0,.2)',
+                          position:'absolute'
+                        }}>
+                          <form onSubmit={handleSubmit} style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                          }}>
+                            <label htmlFor="username" style={{
+                              fontSize: '24px',
+                              marginBottom: '10px',
+                              color: '#2b58ff',
+                            }}>SplitBill Register</label>
+                            <input
+                              type="text"
+                              id="username"
+                              placeholder="Username"
+                              value={username}
+                              onChange={(e) => setUsername(e.target.value)}
+                              style={{
+                                width: '100%',
+                                height: '50px',
+                                marginBottom: '20px',
+                                fontSize: '24px',
+                                border: 'none',
+                                borderBottom: '2px solid #83a4d4',
+                                color: 'var(--fg)',
+                                borderRadius:'10px',
+                                paddingLeft:'20px',
+                                backgroundColor: 'var(--shade2)',
+                                outline: 'none',
+                              }}
+                              required
+                            />
+                            <input
+                              type="password"
+                              id="password"
+                              placeholder="Password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              style={{
+                                width: '100%',
+                                height: '50px',
+                                marginBottom: '20px',
+                                fontSize: '24px',
+                                border: 'none',
+                                borderBottom: '2px solid #83a4d4',
+                                color: 'var(--fg)',
+                                borderRadius:'10px',
+                                paddingLeft:'20px',
+                                backgroundColor: 'var(--shade2)',
+                                outline: 'none',
+                              }}
+                              required
+                            />
+                            <input
+                              type="text"
+                              id="splitWithUsername1"
+                              placeholder="Split Bill With (User1)"
+                              value={splitWithUsername1}
+                              onChange={(e) => setSplitWithUsername1(e.target.value)}
+                              style={{
+                                width: '100%',
+                                height: '50px',
+                                marginBottom: '20px',
+                                fontSize: '24px',
+                                border: 'none',
+                                borderBottom: '2px solid #83a4d4',
+                                color: 'var(--fg)',
+                                borderRadius:'10px',
+                                paddingLeft:'20px',
+                                backgroundColor: 'var(--shade2)',
+                                outline: 'none',
+                              }}
+                              required
+                            />
+                            <input
+                              type="text"
+                              id="splitWithUsername2"
+                              placeholder="Split Bill With (User2)"
+                              value={splitWithUsername2}
+                              onChange={(e) => setSplitWithUsername2(e.target.value)}
+                              style={{
+                                width: '100%',
+                                height: '50px',
+                                marginBottom: '20px',
+                                fontSize: '24px',
+                                border: 'none',
+                                borderBottom: '2px solid #83a4d4',
+                                color: 'var(--fg)',
+                                borderRadius:'10px',
+                                paddingLeft:'20px',
+                                backgroundColor: 'var(--shade2)',
+                                outline: 'none',
+                              }}
+                              required
+                            />
+                            <button
+                              type="submit"
+                              style={{
+                                width: '100%',
+                                height: '50px',
+                                fontSize: '24px',
+                                border: 'none',
+                                borderRadius: '10px',
+                                background: '#2b58ff',
+                                color: 'white',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              Register
+                            </button>
+                            <p style={{ fontSize: '14px', color: '#888', marginTop: '10px' }}>
+                              Please store your username and password securely, as you won&apos;t be able to recover them in the future.
+                            </p>
+                            <p style={{ fontSize: '14px', color: '#888', marginTop: '10px' }}>
+                              Already have an account? <Link href="/login" style={{ color: '#2b58ff', textDecoration: 'none' }}>Login here</Link>
+                            </p>
+                            {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+                          </form>
+                        </div>
+                      </div>
+                    </Layout>
+                  );
+                }
+│   │   │   update-usernames.js
+                import dbConnect from '../../utils/db';
+                import User from '../../models/User';
+                import jwt from 'jsonwebtoken';
+
+                const JWT_SECRET = 'your_secret_key';
+
+                export default async function handler(req, res) {
+                  await dbConnect();
+
+                  const token = req.headers.authorization?.split(' ')[1];
+                  if (!token) {
+                    return res.status(401).json({ message: 'Authorization token missing' });
+                  }
+
+                  const { primaryUsername, secondaryUsername1, secondaryUsername2} = req.body;
+
+                  if (!primaryUsername || !secondaryUsername1 || !secondaryUsername2) {
+                    return res.status(400).json({ message: 'Primary and Secondary usernames are required' });
+                  }
+
+                  try {
+                    const { userId } = jwt.verify(token, JWT_SECRET);
+                    const updatedUser = await User.findByIdAndUpdate(
+                      userId,
+                      {
+                        username: primaryUsername,
+                        splitWithUsername1: secondaryUsername1,
+                        splitWithUsername2: secondaryUsername2,
+                      },
+                      { new: true }
+                    ).select('username splitWithUsername1 splitWithUsername2');
+
+                    if (!updatedUser) {
+                      return res.status(404).json({ message: 'User not found' });
+                    }
+
+                    res.status(200).json({ user: updatedUser });
+                  } catch (error) {
+                    console.error(error);
+                    res.status(500).json({ message: 'Failed to update usernames' });
+                  }
+                }
+│   │   │
+│   │   ├───delete-bill
+│   │   │       [id].js
+                    // pages/api/delete-bill/[id].js
+                    import dbConnect from '../../../utils/db';
+                    import Bill from '../../../models/Bill';
+
+                    export default async function handler(req, res) {
+                      const { id } = req.query;
+
+                      if (req.method !== 'DELETE') {
+                        return res.status(405).json({ message: 'Method not allowed' });
+                      }
+
+                      try {
+                        await dbConnect();
+                        const bill = await Bill.findById(id);
+
+                        if (!bill) {
+                          return res.status(404).json({ message: 'Bill not found' });
+                        }
+
+                        await Bill.deleteOne({ _id: id });
+
+                        return res.status(200).json({ message: 'Bill deleted successfully' });
+                      } catch (error) {
+                        return res.status(500).json({ message: error.message });
+                      }
+                    }
+│   │   │
+│   │   ├───get-bill
+│   │   │       [id].js
+                    import dbConnect from '../../../utils/db';
+                    import Bill from '../../../models/Bill';
+
+                    export default async function handler(req, res) {
+                      const { id } = req.query;
+
+                      await dbConnect();
+
+                      if (req.method === 'GET') {
+                        try {
+                          const bill = await Bill.findById(id);
+                          if (!bill) {
+                            return res.status(404).json({ message: 'Bill not found' });
+                          }
+                          res.status(200).json({ bill });
+                        } catch (error) {
+                          res.status(500).json({ message: 'Internal server error' });
+                        }
+                      } else {
+                        res.status(405).json({ message: 'Method not allowed' });
+                      }
+                    }
+│   │   │
+│   │   └───update-bill
+│   │           [id].js
+                    // pages/api/update-bill/[id].js
+                    import dbConnect from '../../../utils/db';
+                    import Bill from '../../../models/Bill';
+                    import jwt from 'jsonwebtoken';
+
+                    const JWT_SECRET = 'your_secret_key';
+
+                    export default async function handler(req, res) {
+                      await dbConnect();
+
+                      const token = req.headers.authorization?.split(' ')[1];
+                      if (!token) {
+                        return res.status(401).json({ message: 'Authorization token missing' });
+                      }
+
+                      const { id } = req.query;
+                      const { totalBillAmount } = req.body;
+
+                      if (!totalBillAmount) {
+                        return res.status(400).json({ message: 'Total bill amount is required' });
+                      }
+
+                      try {
+                        const { userId } = jwt.verify(token, JWT_SECRET);
+
+                        const updatedBill = await Bill.findByIdAndUpdate(
+                          id,
+                          {
+                            totalBillAmount: Number(totalBillAmount),
+                          },
+                          { new: true }
+                        );
+
+                        if (!updatedBill) {
+                          return res.status(404).json({ message: 'Bill not found' });
+                        }
+
+                        res.status(200).json({ bill: updatedBill });
+                      } catch (error) {
+                        console.error(error);
+                        res.status(500).json({ message: 'Failed to update bill amount' });
+                      }
+                    }
+│   │
+│   └───bill
+│           [id].js
+                import { useRouter } from 'next/router';
+                import { useEffect, useState } from 'react';
+                import Layout from '../../components/Layout';
+                import Navbar from '@/components/Navbar';
+                import styles from './bill.module.css';
+                import CurrencyRupeeOutlinedIcon from '@mui/icons-material/CurrencyRupeeOutlined';
+                import DownloadIcon from '@mui/icons-material/Download';
+                import downloadjs from 'downloadjs';
+                import html2canvas from 'html2canvas';
+                import CountUp from 'react-countup';
+                import LoadingSpinner from '../../components/LoadingSpinner';
+
+                const DisplayDecimal = ({ value }) => {
+                  const decimalPart = (value % 1).toFixed(2).split('.')[1];
+                  return <span>.{decimalPart}</span>;
+                };
+
+                export default function BillDetails() {
+                  const router = useRouter();
+                  const { id } = router.query;
+                  const [bill, setBill] = useState(null);
+                  const [previousBill, setPreviousBill] = useState(null);
+                  const [loading, setLoading] = useState(true);
+                  const [error, setError] = useState(null);
+                  const [user, setUser] = useState(null);
+                  const [editedTotalBillAmount, setEditedTotalBillAmount] = useState('');
+                  const [isEditing, setIsEditing] = useState(false);
+
+                  const handleInputBlur = () => {
+                    setIsEditing(false);
+                  };
+
+                  useEffect(() => {
+                    if (id) {
+                      const fetchBillData = async () => {
+                        const token = localStorage.getItem('token');
+                        try {
+                          const res = await fetch(`/api/get-bill/${id}`, {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          });
+                          const billData = await res.json();
+                          if (!res.ok) throw new Error(billData.message);
+
+                          setBill(billData.bill);
+                          setEditedTotalBillAmount(billData.bill.totalBillAmount);
+
+                          const billDate = billData.bill.date;
+                          const previousRes = await fetch(`/api/get-previous-bill?billDate=${billDate}`, {
+                            headers: {
+                              Authorization: `Bearer ${token}`,
+                            },
+                          });
+                          const previousBillData = await previousRes.json();
+                          if (!previousRes.ok) throw new Error(previousBillData.message);
+
+                          setPreviousBill(previousBillData.bill);
+
+                        } catch (error) {
+                          setError(error.message);
+                        } finally {
+                          setLoading(false);
+                        }
+                      };
+
+                      fetchBillData();
+                    }
+                  }, [id]);
+
+                  useEffect(() => {
+                    const fetchUser = async () => {
+                      const token = localStorage.getItem('token');
+                      if (!token) {
+                        router.push('/login');
+                        return;
+                      }
+
+                      const res = await fetch('/api/get-profile', {
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      });
+
+                      if (res.ok) {
+                        const data = await res.json();
+                        setUser(data.user);
+                      } else {
+                        router.push('/login');
+                      }
+                    };
+
+                    fetchUser();
+                  }, [router]);
+
+                  const handleDelete = async () => {
+                    const token = localStorage.getItem('token');
+                    try {
+                      const res = await fetch(`/api/delete-bill/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                      });
+
+                      if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.message);
+                      }
+
+                      router.push('/');
+                    } catch (error) {
+                      setError(error.message);
+                    }
+                  };
+
+                  const handleUpdate = async () => {
+                    const token = localStorage.getItem('token');
+                    try {
+                      const res = await fetch(`/api/update-bill/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ totalBillAmount: editedTotalBillAmount }),
+                      });
+
+                      if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.message);
+                      }
+
+                      const updatedBill = await res.json();
+                      setBill(updatedBill.bill);
+
+                    } catch (error) {
+                      setError(error.message);
+                    }
+                  };
+
+                  const handleCaptureClick = async () => {
+                    const tableElement = document.querySelector(`.${styles.table}`);
+                    if (!tableElement) return;
+
+                    tableElement.classList.add(styles.hideButtons);
+                    tableElement.classList.add(styles.containerVar);
+                    tableElement.classList.add(styles.showDiv);
+                    tableElement.classList.add(styles.tableDown);
+                    // tableElement.classList.remove(styles.table);  
+                    tableElement.classList.add(styles.priceVar);
+                    tableElement.classList.add(styles.metricVar);
+                    tableElement.classList.add(styles.blockVar);
+                    tableElement.classList.add(styles.billAmountVar);  
+
+                    const canvas = await html2canvas(tableElement);
+                    const formattedDate = new Date(bill.date).toLocaleDateString('en-US', {
+                      month: 'long',
+                      year: 'numeric',
+                    });
+                    const fileName = `${formattedDate} Bill Split.png`;
+                    const dataURL = canvas.toDataURL('image/png');
+                    downloadjs(dataURL, fileName, 'image/png');
+
+                    tableElement.classList.remove(styles.hideButtons);
+                    tableElement.classList.remove(styles.showDiv);
+                    tableElement.classList.remove(styles.priceVar);
+                    tableElement.classList.remove(styles.metricVar);
+                    tableElement.classList.remove(styles.blockVar);
+                    tableElement.classList.remove(styles.billAmountVar);  
+                    tableElement.classList.remove(styles.tableDown);
+                    tableElement.classList.add(styles.table);
+                    tableElement.classList.remove(styles.containerVar);
+                  };
+
+                  if (loading) {
+                    return (
+                      <Layout>
+                        <div style={{display:'flex', height:'100%', alignItems:'center', justifyContent:'center', marginTop:'23%', flexDirection:'column'}}><LoadingSpinner/><p style={{marginLeft:'.8rem'}}>Fetching your bill details, please hold on...</p></div>
+                      </Layout>
+                    );
+                  }
+
+                  if (error) {
+                    return (
+                      <Layout>
+                        <p>Error: {error}</p>
+                      </Layout>
+                    );
+                  }
+
+                  if (!bill) {
+                    return (
+                      <Layout>
+                        <p>Bill not found</p>
+                      </Layout>
+                    );
+                  }
+
+                  const mround = (value, multiple) => {
+                    return Math.round(value / multiple) * multiple;
+                  };
+
+                  // Assuming previousBill.mainMeterReading exists, otherwise set it to 0
+                  const previousMainMeterReading = previousBill ? previousBill.mainMeterReading : 0;
+                  const previousSplitWithMeterReading = previousBill ? previousBill.splitWithMeterReading : 0;
+                  const previousEqualReading = previousBill ? previousBill.equalReading : 0;
+
+                  const currentMainMeterReading = bill.mainMeterReading;
+                  const currentSplitWithMeterReading = bill.splitWithMeterReading;
+                  const currentEqualReading = bill.equalReading;
+
+                  const monthlyMainMeterReading = previousBill ? currentMainMeterReading - previousMainMeterReading : 0;
+                  const monthlySplitWithMeterReading = previousBill ? currentSplitWithMeterReading - previousSplitWithMeterReading : 0;
+                  const monthlyEqualReading = previousBill ? currentEqualReading - previousEqualReading : 0;
+                  const ratePerUnit = previousBill ? bill.totalBillAmount / monthlyMainMeterReading : 0;
+
+                  const primaryUserUsage = previousBill ? monthlyMainMeterReading - monthlySplitWithMeterReading - (0.5 * monthlyEqualReading) : 0;
+                  const secondaryUserUsage =previousBill ?  monthlySplitWithMeterReading + (0.5 * monthlyEqualReading) : 0;
+
+                  const primaryUserAmount = previousBill ? primaryUserUsage * ratePerUnit : 0;
+                  const secondaryUserAmount = previousBill ? secondaryUserUsage * ratePerUnit : 0;
+
+                  const roundedPrimaryUserAmount = mround(primaryUserAmount, 10);
+                  const roundedSecondaryUserAmount = mround(secondaryUserAmount, 10);
+
+                  const startValue = previousMainMeterReading >= 500 ? previousMainMeterReading - 500 : 0;
+
+                  const formattedDate = new Date(bill.date).toLocaleDateString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                  });
+
+                  return (
+                    <Layout>
+                      <Navbar />
+                      <div className="container" style={{ marginTop: '4.5rem' }}>
+                        <div className={styles.table} >
+                          <div className={styles.headingContainer}>
+                            <h3 style={{ marginTop: '-.6rem' }} className={styles.heading}>
+                              <div className={styles.logo}>SplitBill</div>
+                              <button
+                                onClick={handleCaptureClick}
+                                style={{ marginLeft: '1rem', cursor: 'pointer', border: 'none', background: 'none' }}
+                                className={styles.downloadButton}
+                              >
+                                <DownloadIcon className={styles.downloadButton} style={{ marginBottom: '-1.5rem', color:'var(--fg)' }} />
+                              </button>
+                            </h3>
+                            <span style={{ marginTop: '1rem' }} className={styles.date}>
+                              {formattedDate}
+                            </span>
+                          </div>
+                          {previousMainMeterReading >= 0 ? (" ") : (<h4 style={{color:'var(--shade5)', textAlign:'center', marginTop:'.1rem'}}>Please check your last month readings</h4>)}
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Previous Month&apos;s Reading
+                              {previousMainMeterReading >=0  ? (<span className={styles.price}><CountUp start={startValue} end={previousMainMeterReading} duration={1} suffix=" units" /></span>) :
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Current Month&apos;s Reading
+                              <span className={styles.price}><CountUp start={previousMainMeterReading} end={currentMainMeterReading} duration={2} suffix=" units" /></span>
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              {bill.splitWithUser2} Meter Reading
+                              <span className={styles.price}><CountUp end={currentSplitWithMeterReading} duration={2} suffix=" units" /></span>
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Shared Meter Reading
+                              <span className={styles.price}><CountUp end={currentEqualReading} duration={2} suffix=" units" /></span>
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Current Month&apos;s Usage
+                              {monthlyMainMeterReading ? (<span className={styles.price}><CountUp end={monthlyMainMeterReading} duration={3} suffix=" units" /></span>) : 
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              {bill.splitWithUser1} Electricity Usage
+                              {primaryUserUsage ? (<span className={styles.price}><CountUp end={primaryUserUsage - 0.5 * monthlyEqualReading} duration={3} suffix=" units" /></span>) :
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              {bill.splitWithUser2} Electricity Usage
+                              {secondaryUserUsage ? (<span className={styles.price}><CountUp end={secondaryUserUsage - 0.5 * monthlyEqualReading} duration={3} suffix=" units" /></span>) : 
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Shared Electricity Usage
+                              {monthlyEqualReading ? (<span className={styles.price}><CountUp end={monthlyEqualReading} duration={3} suffix=" units" /></span>) :
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              Rate per Unit
+                              {ratePerUnit ? (<span className={styles.price}><CountUp end={Math.floor(ratePerUnit)} duration={4} prefix="₹ " /><DisplayDecimal value={ratePerUnit} /></span>) :
+                              (<span className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                      <p className={styles.metric}>
+                        Total Bill Amount
+                        <span className={styles.price} style={{ fontSize: '1.3rem', color: 'var(--fg)'}}>
+                        {isEditing && (<CurrencyRupeeOutlinedIcon style={{ verticalAlign: 'middle'}} />)}
+                          {isEditing ? (
+                            <input
+                              className={styles.innerBlock}
+                              type="number"
+                              value={editedTotalBillAmount}
+                              onChange={(e) => setEditedTotalBillAmount(Number(e.target.value))}
+                              onBlur={handleInputBlur}
+                              style={{ fontWeight: 'bold', fontSize: '1.3rem', width: '4rem', border: 'none', outline: 'none', marginRight: '-.1rem', background:'var(--shade2)', color:'var(--fg)' }}
+                              autoFocus
+                            />
+                          ) : (
+                            <span onClick={() => setIsEditing(true)} style={{ cursor: 'pointer' }}>
+                              <CountUp className={styles.billAmount} style={{ fontWeight: 'bold', fontSize: '1.3rem' }} end={editedTotalBillAmount} duration={3} prefix="₹ " />
+                            </span>
+                          )}
+                        </span>
+                      </p>
+                    </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              {bill.splitWithUser1} Bill Amount
+                              {roundedPrimaryUserAmount ? (<span className={styles.price} style={{ fontSize: '1.3rem', color: 'var(--shade1)', fontWeight: 'bold' }}>
+                                <CountUp className={styles.billAmount} end={roundedPrimaryUserAmount} duration={5} prefix="₹ " />
+                              </span>) :
+                              (<span style={{ fontSize: '1.3rem', color: 'var(--fg)', fontWeight: 'bold' }} className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div className={styles.block}>
+                            <p className={styles.metric}>
+                              {bill.splitWithUser2} Bill Amount
+                              {roundedSecondaryUserAmount ? (<span className={styles.price} style={{ fontSize: '1.3rem', color: 'var(--shade1)', fontWeight: 'bold' }}>
+                                <CountUp className={styles.billAmount} end={roundedSecondaryUserAmount} duration={5} prefix="₹ " />
+                              </span>) :
+                              (<span style={{ fontSize: '1.3rem', color: 'var(--fg)', fontWeight: 'bold' }} className={styles.price}>N/A</span>)}
+                            </p>
+                          </div>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'space-around',
+                              padding: '0 10%',
+                              gap: '5%',
+                              marginTop: '-1.5rem',
+                            }}
+                            className={styles.buttonContainer}
+                          >
+                            <button className={styles.btn} onClick={handleDelete}>
+                              <p>Delete Bill</p>
+                              <span className={styles.fa} aria-hidden="true"></span>
+                            </button>
+                            <button className={styles.btn} onClick={handleUpdate}>
+                              <p>Save Change</p>
+                              <span className={styles.fa} aria-hidden="true"></span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </Layout>
+                  );
+                }
+│
+└───utils
+        db.js
+            // utils/db.js
+            import mongoose from 'mongoose';
+
+            const MONGODB_URI = "mongodb+srv://pranav:Pranav2001@cluster0.stfenz5.mongodb.net/?retryWrites=true&w=majority";
+
+            if (!MONGODB_URI) {
+              throw new Error(
+                'Please define the MONGODB_URI environment variable inside .env.local'
+              );
+            }
+
+            let cached = global.mongoose;
+
+            if (!cached) {
+              cached = global.mongoose = { conn: null, promise: null };
+            }
+
+            async function dbConnect() {
+              if (cached.conn) {
+                return cached.conn;
+              }
+
+              if (!cached.promise) {
+                const opts = {
+                  useNewUrlParser: true,
+                  useUnifiedTopology: true,
+                };
+
+                cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+                  return mongoose;
+                });
+              }
+              cached.conn = await cached.promise;
+              return cached.conn;
+            }
+
+            export default dbConnect;
+
+
+
+Above is the application file and code structure make channge in above code so that when first time user load the website the complete data from api should store to localstorage of browser and application fetch data from localstorage

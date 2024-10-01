@@ -1,0 +1,141 @@
+.navbar {
+    transition: all 0.3s ease-in-out;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    height: 40px;
+    margin-left: -1rem;
+    padding: 0 10px 10px 10px;
+  }
+  
+  .navbar.scrolling {
+    background-color: var(--fgrev);
+  }
+
+  .navbar.transparent {
+    background-color: var(--fgrev);
+  }
+  
+  .navbarContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    margin-top: -.5rem;
+  }
+  
+  .navbarLeft {
+    display: flex;
+    align-items: left;
+  }
+  
+  .navbarRight {
+    display: flex;
+    align-items: center;
+    margin-right: 3%;
+  }
+  
+  .navbarList {
+    display: flex;
+    margin-left: 20px;
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .navbarItem {
+    margin-right: 20px;
+  }
+  
+  .activeLink {
+    color: var(--fg);
+    font-weight: bolder;
+  }
+  
+  .inactiveLink {
+    color: var(--fg);
+    font-weight: normal;
+  }
+
+  .scrolling .activeLink{
+    color: var(--fg);
+  }
+
+  .scrolling .inactiveLink{
+    color: var(--fg);
+  }
+
+  .scrolling .checkbox-labelmob .ball {
+    background-color: var(--shade2);
+    }
+  
+  .mobileMenu {
+    display: flex;
+    align-items: center;
+  }
+  
+  .mobileMenuContent {
+    position: absolute;
+    top: 210%;
+    right: 11.6%;
+    background-color: var(--shade6);
+    height: 59vh;
+    width: 78%;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 10;
+  }
+  
+  .mobileMenuList {
+    list-style-type: none;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 25%;
+  }
+  
+  .mobileMenuItem {
+    margin-bottom: 10px;
+  }
+  
+  .mobileMenuLink {
+    color: var(--shade7);
+  }
+
+  .mob_menu {
+    display: block;
+  }
+
+  .navbar.transparent {
+    display: none;
+  }
+  
+  /* Hide navbar list on mobile */
+  @media (max-width: 1239px) {
+    .navbarList {
+      display: none;
+    }
+    .navbarRight {
+      margin-right: 1px;
+    }
+  }
+  
+  /* Hide mobile menu on desktop */
+  @media (min-width: 1240px) {
+    .mobileMenu {
+      display: none;
+    }
+  }
+
+  @media (max-width: 521px) {
+    .navbar{
+      width: 104%;
+      padding: 0 7px 7px 7px;
+    }
+    .mobmenu {
+      display: none;
+    }
+  }
